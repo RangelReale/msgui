@@ -290,7 +290,7 @@ void MainWindow::createDockedWidgets()
 	dk_callgraph->setObjectName("dock_callgraph");
 
 	_callgraph = new Callgraph(dk_callgraph);
-	connect(_callgraph, &Callgraph::showFileAndLine, this, &MainWindow::showFileAndLine);
+	connect(_callgraph, &Callgraph::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 
 	dk_callgraph->setWidget(_callgraph);
 	addDockWidget(Qt::RightDockWidgetArea, dk_callgraph);
@@ -326,16 +326,16 @@ void MainWindow::createWidgets()
 	// body: error
 	_error = new Error(root);
 	_error->setVisible(false);
-	connect(_error, &Error::showFileAndLine, this, &MainWindow::showFileAndLine);
+	connect(_error, &Error::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 
 	// body: frame
 	_frame = new Frame(nullptr, root);
 	_frame->setVisible(false);
-	connect(_frame, &Frame::showFileAndLine, this, &MainWindow::showFileAndLine);
+	connect(_frame, &Frame::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 
 	// body: backtrace
 	_backtrace = new Backtrace(root);
-	connect(_backtrace, &Backtrace::showFileAndLine, this, &MainWindow::showFileAndLine);
+	connect(_backtrace, &Backtrace::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 	
 	// body: editor
 	_editor = new mredit::Editor(root);
@@ -759,6 +759,8 @@ void MainWindow::showFilenameList(msglib::cmd::filename_list_base::ptr filename_
 
 void MainWindow::openSourceFile(const QString &filename)
 {
+	//logger()->info("Open source file: %1", filename);
+
 	if (_editor_current_file != filename)
 	{
 		_editor->openFile(filename);
@@ -768,6 +770,8 @@ void MainWindow::openSourceFile(const QString &filename)
 
 void MainWindow::markSourceFile(int row, int col)
 {
+	//logger()->info("Mark source file: %1 %2", row, col);
+
 	_editor->clearBookmarks(_editor_bmgroup_showpos);
 	if (row >= 0)
 	{
