@@ -423,7 +423,7 @@ bool MainWindow::maybeSave()
 void MainWindow::loadFile(const QString &fileName)
 {
 	QFile file(fileName);
-	if (!file.open(QFile::ReadOnly | QFile::Text)) {
+	if (!file.open(QFile::ReadOnly)) {
 		QMessageBox::warning(this, tr("Application"),
 			tr("Cannot read file %1:\n%2.")
 			.arg(QDir::toNativeSeparators(fileName), file.errorString()));
@@ -461,7 +461,7 @@ bool MainWindow::saveFile(const QString &fileName)
 		return false;
 
 	QFile file(fileName);
-	if (!file.open(QFile::WriteOnly | QFile::Text)) {
+	if (!file.open(QFile::WriteOnly)) {
 		QMessageBox::warning(this, tr("Application"),
 			tr("Cannot write file %1:\n%2.")
 			.arg(QDir::toNativeSeparators(fileName),

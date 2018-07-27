@@ -44,6 +44,7 @@ QProcess::ProcessState Process::processState() const
 	return QProcess::state();
 }
 
+// The "cmd" object must be escaped of \r\n, or else metashell will interpret it as 2 lines
 void Process::writeRawCommand(const QJsonDocument &command)
 {
 	emit onSendCommand(command);
@@ -56,7 +57,7 @@ void Process::writeCmd(const QString &cmd)
 {
 	QJsonObject cmddata;
 	cmddata["type"] = "cmd";
-	cmddata["cmd"] = cmd;
+	cmddata["cmd"] = escapeCmd(cmd);
 	
 	if (_isprompt)
 		writeRawCommand(QJsonDocument(cmddata));
@@ -73,7 +74,7 @@ void Process::writeCmdList(const QStringList &cmdlist)
 	{
 		QJsonObject cmddata;
 		cmddata["type"] = "cmd";
-		cmddata["cmd"] = cmdlist.front();
+		cmddata["cmd"] = escapeCmd(cmdlist.front());
 		first = QJsonDocument(cmddata);
 	}
 
@@ -89,7 +90,7 @@ void Process::writeCmdList(const QStringList &cmdlist)
 
 		QJsonObject cmddata;
 		cmddata["type"] = "cmd";
-		cmddata["cmd"] = c;
+		cmddata["cmd"] = escapeCmd(c);
 		_pendingcmds.append(QJsonDocument(cmddata));
 	}
 
@@ -103,7 +104,7 @@ void Process::writeCmdDirect(const QString &cmd)
 {
 	QJsonObject cmddata;
 	cmddata["type"] = "cmd";
-	cmddata["cmd"] = cmd;
+	cmddata["cmd"] = escapeCmd(cmd);
 
 	writeRawCommand(QJsonDocument(cmddata));
 }
@@ -112,7 +113,7 @@ void Process::writeCodeCompletion(const QString &cmd)
 {
 	QJsonObject cmddata;
 	cmddata["type"] = "code_completion";
-	cmddata["cmd"] = cmd;
+	cmddata["cmd"] = escapeCmd(cmd);
 
 	if (_isprompt)
 		writeRawCommand(QJsonDocument(cmddata));
@@ -211,6 +212,11 @@ void Process::internalProcError(QProcess::ProcessError error)
 		break;
 	}
 	emit onError(msg);
+}
+
+QString Process::escapeCmd(const QString &cmd)
+{
+	return QString(cmd).replace("\r\n", "\n");
 }
 
 // Parses a line of metashell output

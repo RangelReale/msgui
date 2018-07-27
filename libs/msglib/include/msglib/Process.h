@@ -43,6 +43,7 @@ private slots :
 	void internalFinished(int exitCode, QProcess::ExitStatus exitstatus);
 	void internalProcError(QProcess::ProcessError error);
 private:
+	QString escapeCmd(const QString &cmd);
 	void writeCmdDirect(const QString &cmd);
 	void parseLine(const QString &line);
 
