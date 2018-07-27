@@ -323,6 +323,11 @@ void MainWindow::createWidgets()
 	connect(_cmd, &HistoryLineEdit::lineExecuted, this, &MainWindow::cmdExecute);
 	cmdlayout->addWidget(_cmd);
 
+	// body: error
+	_error = new Error(root);
+	_error->setVisible(false);
+	connect(_error, &Error::showFileAndLine, this, &MainWindow::showFileAndLine);
+
 	// body: frame
 	_frame = new Frame(nullptr, root);
 	_frame->setVisible(false);
@@ -356,7 +361,9 @@ void MainWindow::createWidgets()
 	splitter1->setStretchFactor(0, 3);
 	splitter1->setStretchFactor(1, 10);
 
+	rootlayout->setSizeConstraint(QLayout::SetMinimumSize);
 	rootlayout->addLayout(cmdlayout, 1);
+	rootlayout->addWidget(_error, 1);
 	rootlayout->addWidget(_frame, 1);
 	rootlayout->addWidget(splitter1, 13);
 }
@@ -647,6 +654,7 @@ void MainWindow::processCommandClass(msglib::cmd::base::ptr cc)
 		}
 		else if (auto c = std::dynamic_pointer_cast<msglib::cmd::error>(cc)) {
 			logger()->logger("error")->error(c-> message);
+			_error->setMessage(c->message);
 		}
 		else if (auto c = std::dynamic_pointer_cast<msglib::cmd::filename_list>(cc)) {
 			showFilenameList(c);
@@ -815,6 +823,7 @@ void MainWindow::processStateChanged(QProcess::ProcessState newState)
 void MainWindow::processSendCommand(const QJsonDocument &line)
 {
 	setEnabledCmd(false);
+	_error->setMessage();
 
 	logger()->logger("process")->trace("Sending command: %1", QString(line.toJson()));
 }

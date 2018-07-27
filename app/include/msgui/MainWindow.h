@@ -2,6 +2,7 @@
 
 #include "msgui/LogConfig.h"
 #include "msgui/Project.h"
+#include "msgui/Error.h"
 #include "msgui/Frame.h"
 #include "msgui/Backtrace.h"
 #include "msgui/Callgraph.h"
@@ -153,6 +154,7 @@ private:
 	QLabel *_st_cmdmode;
 	QLabel *_st_process;
 
+	Error *_error;
 	Frame *_frame;
 	Backtrace *_backtrace;
 	Callgraph *_callgraph;

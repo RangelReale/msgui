@@ -46,8 +46,10 @@ void Callgraph::setCallgraph(msglib::cmd::call_graph::ptr callgraph)
 
 				item->setData(2, FILENAME_ROLE, node->node->source_location);
 
-				mredit::Label *namelbl = new mredit::Label(node->node->name, this);
+				mredit::Label *namelbl = new mredit::Label(this);
+				namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 				new msgwidget::highlighter::HL_CPP(namelbl->document());
+				namelbl->setPlainText(node->node->name);
 				setItemWidget(item, 0, namelbl);
 
 				item->setText(1, node->node->kind);

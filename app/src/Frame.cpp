@@ -4,6 +4,7 @@
 
 #include <QBoxLayout>
 #include <QLabel>
+#include <QFontDatabase>
 
 namespace msgui {
 
@@ -22,6 +23,7 @@ Frame::Frame(msglib::cmd::base::ptr frame, QWidget *parent) :
 	_kind->setContentsMargins(0, 0, 0, 0);
 
 	_name = new mredit::Label(this);
+	_name->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 	new msgwidget::highlighter::HL_CPP(_name->document());
 	_name->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
 

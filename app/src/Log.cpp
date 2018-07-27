@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QHeaderView>
 #include <QFileInfo>
+#include <QFontDatabase>
 
 #include <log4qt/helpers/datetime.h>
 
@@ -27,10 +28,10 @@ void Log::addLog(const Log4Qt::LoggingEvent &event)
 	QTreeWidgetItem *logitem = new QTreeWidgetItem(this);
 
 	logitem->setText(0, Log4Qt::DateTime::fromMSecsSinceEpoch(event.timeStamp()).toString("hh:mm:ss.zzz"));
-	//logitem->setText(1, log->category);
 	logitem->setText(1, event.loggename());
-	//mredit::Label *msglbl = new mredit::Label(log->msg, this);
-	mredit::Label *msglbl = new mredit::Label(event.message(), this);
+	mredit::Label *msglbl = new mredit::Label(this);
+	msglbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+	msglbl->setPlainText(event.message());
 	setItemWidget(logitem, 2, msglbl);
 
 	addTopLevelItem(logitem);

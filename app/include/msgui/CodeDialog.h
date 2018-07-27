@@ -3,6 +3,7 @@
 #include <mredit/Editor.h>
 
 #include <QDialog>
+#include <QKeyEvent>
 
 namespace msgui {
 
@@ -15,6 +16,8 @@ public:
 private slots:
 	void onBtnOk();
 	void onBtnCancel();
+protected:
+	void keyPressEvent(QKeyEvent *);
 private:
 	mredit::Editor *_editor;
 };

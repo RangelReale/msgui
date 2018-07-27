@@ -21,6 +21,7 @@ add_executable(msgui WIN32
     src/Backtrace.cpp
     src/Callgraph.cpp
     src/Log.cpp
+    src/Error.cpp
 
     include/msgui/MainWindow.h
     include/msgui/Application.h
@@ -34,6 +35,7 @@ add_executable(msgui WIN32
     include/msgui/Backtrace.h
     include/msgui/Callgraph.h
     include/msgui/Log.h
+    include/msgui/Error.h
 
     src/resources/resources.qrc
     src/resources/resources.rc

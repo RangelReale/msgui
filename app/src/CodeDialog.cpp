@@ -10,7 +10,7 @@
 namespace msgui {
 
 CodeDialog::CodeDialog(const QString &code, QWidget *parent) : 
-	QDialog(parent, Qt::MSWindowsFixedSizeDialogHint)
+	QDialog(parent)
 {
 	setWindowTitle("Settings");
 
@@ -38,7 +38,7 @@ CodeDialog::CodeDialog(const QString &code, QWidget *parent) :
 	btnlayout->addWidget(btnOk);
 	btnlayout->addWidget(btnCancel);
 
-	resize(QDesktopWidget().availableGeometry(this).size() * 0.4);
+	resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
 }
 
 QString CodeDialog::text() const
@@ -54,6 +54,13 @@ void CodeDialog::onBtnOk()
 void CodeDialog::onBtnCancel()
 {
 	reject();
+}
+
+void CodeDialog::keyPressEvent(QKeyEvent *e)
+{
+	if (e->key() != Qt::Key_Escape) {
+		QDialog::keyPressEvent(e);
+	}
 }
 
 

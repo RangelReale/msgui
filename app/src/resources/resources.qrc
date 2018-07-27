@@ -20,5 +20,6 @@
     <file>help-about.png</file>
     <file>view-calendar-list.png</file>
     <file>story-editor.png</file>
+    <file>dialog-error.png</file>
 </qresource>
 </RCC>

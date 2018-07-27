@@ -42,8 +42,10 @@ void Backtrace::setBacktrace(msglib::cmd::backtrace::ptr backtrace)
 			//item->setTextAlignment(0, Qt::AlignCenter);
 			ct++;
 
-			mredit::Label *namelbl = new mredit::Label(b->name, this);
+			mredit::Label *namelbl = new mredit::Label(this);
+			namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 			new msgwidget::highlighter::HL_CPP(namelbl->document());
+			namelbl->setPlainText(b->name);
 			setItemWidget(item, 1, namelbl);
 
 			item->setText(2, b->kind);
