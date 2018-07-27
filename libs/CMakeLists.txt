@@ -1,0 +1,2 @@
+add_subdirectory(msglib)
+add_subdirectory(msgwidget)

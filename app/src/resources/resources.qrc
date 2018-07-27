@@ -1,0 +1,24 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>msgui_icon.png</file>
+    <file>arrow-right.png</file>
+    <file>document-new.png</file>
+    <file>document-open.png</file>
+    <file>document-properties.png</file>
+    <file>document-save.png</file>
+    <file>document-save-as.png</file>
+    <file>debug-run.png</file>
+    <file>debug-step-into.png</file>
+    <file>debug-step-out.png</file>
+    <file>debug-step-over.png</file>
+    <file>dialog-cancel.png</file>
+    <file>go-next.png</file>
+    <file>go-previous.png</file>
+    <file>process-stop.png</file>
+    <file>games-config-background.png</file>
+    <file>view-refresh.png</file>
+    <file>help-about.png</file>
+    <file>view-calendar-list.png</file>
+    <file>story-editor.png</file>
+</qresource>
+</RCC>
