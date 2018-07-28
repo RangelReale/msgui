@@ -7,7 +7,7 @@ configure_file(
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(msgui WIN32
+add_executable(msgui WIN32 MACOSX_BUNDLE
     src/main.cpp
     src/Application.cpp
     src/LogConfig.cpp
@@ -61,13 +61,15 @@ source_group(src FILES ${SG_ROOT})
 OPTION(ENABLE_INSTALLER "Generate installer" OFF)
 
 if (ENABLE_INSTALLER)
-  include(WinDeployQt)
-  WinDeployQt(TARGET msgui)
+  if (WIN32)
+      include(WinDeployQt)
+      WinDeployQt(TARGET msgui)
 
-  set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE) # MSVC2015+
-  include(InstallRequiredSystemLibraries)
+      set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE) # MSVC2015+
+      include(InstallRequiredSystemLibraries)
 
-  install(DIRECTORY "${CMAKE_BINARY_DIR}/windeployqt/" DESTINATION "bin")
+      install(DIRECTORY "${CMAKE_BINARY_DIR}/windeployqt/" DESTINATION "bin")
+  endif()
 
   set (CPACK_PACKAGE_NAME "MSGUI")
   set (CPACK_PACKAGE_VENDOR "Rangel Reale")
