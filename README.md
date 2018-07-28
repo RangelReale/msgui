@@ -26,7 +26,7 @@ The prompt keeps a history of used commands, available pressing the UP and DOWN 
 
 The application uses the modes available on metashell, and the prompt accepts all commands that metashell provides, so learning metashell should be a great help to using this program.
 
-### Dependencies
+### Build dependencies
 
 * Qt 5.7+
 * C++14 compiler
