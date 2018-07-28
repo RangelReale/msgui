@@ -183,6 +183,7 @@ void MainWindow::createActions()
 	projectToolBar->setObjectName("project_toolbar");
 
 	QAction *projectSettingsMenu = projectMenu->addAction(QIcon(":/story-editor.png"), tr("&Settings"), this, &MainWindow::menuProjectSettings);
+    projectSettingsMenu->setMenuRole(QAction::NoRole);
 
 	projectSettingsMenu->setShortcut(QKeySequence(Qt::Key_F4));
 
@@ -207,7 +208,9 @@ void MainWindow::createActions()
 	_debugForwardtracetMenu = debugMenu->addAction(QIcon(":/go-next.png"), tr("&Forward trace"), this, &MainWindow::menuDebugForwardtrace);
 
 	debugMenu->addSeparator();
-	QMenu *debugMenuOptions = debugMenu->addMenu(tr("Options"));
+    QMenu *debugMenuOptions = new QMenu(tr("&Options"));
+    QAction *actDebugMenuOptions = debugMenu->addMenu(debugMenuOptions);
+    actDebugMenuOptions->setMenuRole(QAction::NoRole);
 
 	_debugStepOnStart = debugMenuOptions->addAction(tr("Ste&p on start"), this, &MainWindow::menuDebugStepOnStart);
 	_debugStepOnStart->setCheckable(true);
