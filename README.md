@@ -28,6 +28,8 @@ The application uses the modes available on metashell, and the prompt accepts al
 
 ### Dependencies
 
+* Qt 5.7+
+* C++14 compiler
 * [MREdit editor](https://github.com/RangelReale/mredit)
 * [Log4Qt](https://github.com/MEONMedical/Log4Qt)
 
