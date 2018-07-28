@@ -113,6 +113,7 @@ private slots:
 private:
 	void processCommandClass(msglib::cmd::base::ptr cc);
 
+	void closeProject();
 	void loadProject();
 
 	void createProcess();
@@ -124,6 +125,8 @@ private:
 
 	void readSettings();
 	void writeSettings();
+	void readProjectSettings();
+	void writeProjectSettings();
 	bool maybeSave();
 	bool saveFile(const QString &fileName);
 	void setCurrentFile(const QString &fileName);

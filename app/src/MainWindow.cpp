@@ -27,6 +27,7 @@
 #include <QJsonObject>
 #include <QDockWidget>
 #include <QSplitter>
+#include <QCryptographicHash>
 
 namespace msgui {
 
@@ -71,6 +72,8 @@ MainWindow::~MainWindow()
 	{
 		LogWindow::instance()->close();
 	}
+
+	closeProject();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -372,7 +375,6 @@ void MainWindow::createWidgets()
 void MainWindow::readSettings()
 {
 	QSettings settings;
-	_cmd->setHistory(settings.value("cmd_history").toStringList());
 
 	const QByteArray geometry = settings.value("geometry", QByteArray()).toByteArray();
 	if (geometry.isEmpty()) {
@@ -395,11 +397,30 @@ void MainWindow::readSettings()
 void MainWindow::writeSettings()
 {
 	QSettings settings;
-	settings.setValue("cmd_history", _cmd->history());
-
 	settings.setValue("geometry", saveGeometry());
 	settings.setValue("windowState", saveState());
 }
+
+void MainWindow::readProjectSettings()
+{
+	if (curFile.isEmpty())
+		return;
+
+	QSettings settings;
+	QString chkey = QString(QCryptographicHash::hash(curFile.toUtf8(), QCryptographicHash::Md5).toHex());
+	_cmd->setHistory(settings.value(QString("cmd_prj_history/%1").arg(chkey)).toStringList());
+}
+
+void MainWindow::writeProjectSettings()
+{
+	if (curFile.isEmpty())
+		return;
+
+	QSettings settings;
+	QString chkey = QString(QCryptographicHash::hash(curFile.toUtf8(), QCryptographicHash::Md5).toHex());
+	settings.setValue(QString("cmd_prj_history/%1").arg(chkey), _cmd->history());
+}
+
 
 bool MainWindow::maybeSave()
 {
@@ -450,8 +471,8 @@ void MainWindow::loadFile(const QString &fileName)
 	QApplication::restoreOverrideCursor();
 #endif
 
-	loadProject();
 	setCurrentFile(fileName);
+	loadProject();
 	statusBar()->showMessage(tr("File loaded"), 2000);
 }
 
@@ -487,6 +508,9 @@ bool MainWindow::saveFile(const QString &fileName)
 
 void MainWindow::setCurrentFile(const QString &fileName)
 {
+	// write previous file settings
+	writeProjectSettings();
+
 	curFile = fileName;
 	_project->setModified(false);
 	setWindowModified(false);
@@ -508,12 +532,16 @@ void MainWindow::setCurrentFile(const QString &fileName)
 		settings.setValue("recentFileList", files);
 		updateRecentFileActions();
 	}
+
+	// read current project file settings
+	readProjectSettings();
 }
 
 void MainWindow::updateRecentFileActions()
 {
 	QSettings settings;
 	QStringList files = settings.value("recentFileList").toStringList();
+	files.removeAll("");
 
 	int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
 
@@ -680,6 +708,11 @@ void MainWindow::processCommandClass(msglib::cmd::base::ptr cc)
 			showFrame(c);
 		}
 	}
+}
+
+void MainWindow::closeProject()
+{
+	writeProjectSettings();
 }
 
 void MainWindow::loadProject()
