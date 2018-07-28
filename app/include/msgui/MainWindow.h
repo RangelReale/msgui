@@ -95,6 +95,8 @@ private slots:
 	void menuInformationEnvironmentMacroNames();
 	void menuInformationEnvironmentMacros();
 
+	void menuDebugStepOnStart();
+	void menuDebugForwardtraceOnStart();
 	void menuDebugStart();
 	void menuDebugStop();
 	void menuDebugContinue();
@@ -166,6 +168,8 @@ private:
 	QMenu *_viewWindowMenu;
 
 	// Actions
+	QAction *_debugStepOnStart;
+	QAction *_debugForwardtraceOnStart;
 	QAction *_debugStartMenu;
 	QAction *_debugStopMenu;
 	QAction *_debugContinueMenu;

@@ -29,6 +29,8 @@
 #include <QSplitter>
 #include <QCryptographicHash>
 
+#include "version.h"
+
 namespace msgui {
 
 MainWindow::MainWindow(const QString &filename) : 
@@ -44,6 +46,7 @@ MainWindow::MainWindow(const QString &filename) :
 	createWidgets();
 
 	initLog();
+	logger()->logger("app")->info(QString("MSGUI version %1").arg(QString::fromLocal8Bit(VER_FILEVERSION_STR)));
 
 	readSettings();
 
@@ -196,12 +199,21 @@ void MainWindow::createActions()
 	debugMenu->addSeparator();
 	_debugStepIntoMenu = debugMenu->addAction(QIcon(":/debug-step-into.png"), tr("Step &into"), this, &MainWindow::menuDebugStepInto);
 	_debugStepOverMenu = debugMenu->addAction(QIcon(":/debug-step-over.png"), tr("Step &over"), this, &MainWindow::menuDebugStepOver);
-	_debugStepOutMenu = debugMenu->addAction(QIcon(":/debug-step-out.png"), tr("Step &out"), this, &MainWindow::menuDebugStepOut);
+	_debugStepOutMenu = debugMenu->addAction(QIcon(":/debug-step-out.png"), tr("Step o&ut"), this, &MainWindow::menuDebugStepOut);
 	_debugStepIntoBackMenu = debugMenu->addAction(QIcon(":/debug-step-into.png"), tr("Step into back"), this, &MainWindow::menuDebugStepIntoBack);
 	_debugStepOverBackMenu = debugMenu->addAction(QIcon(":/debug-step-over.png"), tr("Step over back"), this, &MainWindow::menuDebugStepOverBack);
 	debugMenu->addSeparator();
 	_debugBacktracetMenu = debugMenu->addAction(QIcon(":/go-previous.png"), tr("&Backtrace"), this, &MainWindow::menuDebugBacktrace);
-	_debugForwardtracetMenu = debugMenu->addAction(QIcon(":/go-next.png"), tr("&Forwardtrace"), this, &MainWindow::menuDebugForwardtrace);
+	_debugForwardtracetMenu = debugMenu->addAction(QIcon(":/go-next.png"), tr("&Forward trace"), this, &MainWindow::menuDebugForwardtrace);
+
+	debugMenu->addSeparator();
+	QMenu *debugMenuOptions = debugMenu->addMenu(tr("Options"));
+
+	_debugStepOnStart = debugMenuOptions->addAction(tr("Ste&p on start"), this, &MainWindow::menuDebugStepOnStart);
+	_debugStepOnStart->setCheckable(true);
+	_debugForwardtraceOnStart = debugMenuOptions->addAction(tr("For&ward trace on start"), this, &MainWindow::menuDebugStepOnStart);
+	_debugForwardtraceOnStart->setCheckable(true);
+
 
 	_debugStartMenu->setShortcut(QKeySequence(Qt::Key_F5));
 	_debugStopMenu->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F5));
@@ -289,7 +301,7 @@ void MainWindow::createDockedWidgets()
 	_viewWindowMenu->addAction(dk_log->toggleViewAction());
 
 	// dock: call graph
-	QDockWidget *dk_callgraph = new QDockWidget("Forwardtrace", this);
+	QDockWidget *dk_callgraph = new QDockWidget("Forward trace", this);
 	dk_callgraph->setObjectName("dock_callgraph");
 
 	_callgraph = new Callgraph(dk_callgraph);
@@ -376,6 +388,9 @@ void MainWindow::readSettings()
 {
 	QSettings settings;
 
+	_debugStepOnStart->setChecked(settings.value("dbg_steponstart", true).toBool());
+	_debugForwardtraceOnStart->setChecked(settings.value("dbg_forwardtraceonstart", true).toBool());
+
 	const QByteArray geometry = settings.value("geometry", QByteArray()).toByteArray();
 	if (geometry.isEmpty()) {
 		setWindowState(Qt::WindowMaximized);
@@ -397,6 +412,10 @@ void MainWindow::readSettings()
 void MainWindow::writeSettings()
 {
 	QSettings settings;
+
+	settings.setValue("dbg_steponstart", _debugStepOnStart->isChecked());
+	settings.setValue("dbg_forwardtraceonstart", _debugForwardtraceOnStart->isChecked());
+
 	settings.setValue("geometry", saveGeometry());
 	settings.setValue("windowState", saveState());
 }
@@ -979,6 +998,17 @@ void MainWindow::menuInformationEnvironmentMacros()
 	}
 }
 
+void MainWindow::menuDebugStepOnStart()
+{
+
+}
+
+void MainWindow::menuDebugForwardtraceOnStart()
+{
+
+}
+
+
 void MainWindow::menuDebugStart()
 {
 	if (_cmdmode == cmdmode_t::metadebug || _cmdmode == cmdmode_t::preprocessordebug)
@@ -995,11 +1025,16 @@ void MainWindow::menuDebugStart()
 
 		_cmd->simulateExecuteLine(_cmd->text());
 
-		_process->writeCmdList(QStringList() << 
-			dcmd <<
-			"step 1" <<
-			"backtrace"
-		);
+		QStringList cmdlist;
+		cmdlist << dcmd;
+		if (_debugForwardtraceOnStart->isChecked()) {
+			cmdlist << "forwardtrace";
+		}
+		if (_debugStepOnStart->isChecked()) {
+			cmdlist << "step 1" << "backtrace";
+		}
+
+		_process->writeCmdList(cmdlist);
 	}
 }
 
@@ -1064,7 +1099,9 @@ void MainWindow::menuHelpLog()
 
 void MainWindow::menuHelpAbout()
 {
-	QMessageBox::about(this, "MSGUI - Metashell GUI", "Copyright (c) 2018 Rangel Reale (rangelreale@gmail.com)");
+	QMessageBox::about(this, 
+		QString("MSGUI %1 - Metashell GUI").arg(QString::fromLocal8Bit(VER_FILEVERSION_STR)),
+		"Copyright (c) 2018 Rangel Reale (rangelreale@gmail.com)");
 }
 
 void MainWindow::createProcess()
