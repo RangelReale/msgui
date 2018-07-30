@@ -1,4 +1,5 @@
 #include "msgui/TemplateKind.h"
+#include "msgwidget/highlighter/HL_CPP.h"
 
 #include <mredit/Label.h>
 
@@ -40,6 +41,7 @@ void TemplateKind::addTemplateKind(const QString &name, const QString &kind, con
 
 	mredit::Label *msglbl = new mredit::Label(this);
 	msglbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+	new msgwidget::highlighter::HL_CPP(msglbl->document());
 	msglbl->setPlainText(name);
 	setItemWidget(item, 0, msglbl);
 	QFileInfo fi(sourceLocation);
