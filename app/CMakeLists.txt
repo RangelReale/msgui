@@ -7,7 +7,17 @@ configure_file(
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(msgui WIN32 MACOSX_BUNDLE
+if (APPLE)
+    set(MACOSX_BUNDLE_BUNDLE_NAME MSGUI)
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.rangelreale.msgui")
+    set(MACOSX_BUNDLE_INFO_STRING "MSGUI - Metashell GUI")
+    set(MACOSX_BUNDLE_ICON_FILE "msgui_icon.icns")
+    set(MACOSX_BUNDLE_LONG_VERSION_STRING "${MSGUI_NUMBER}.${MSGUI_VERSION}.${MSGUI_BUILD_NUMBER}")
+    set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${MACOSX_BUNDLE_LONG_VERSION_STRING})
+    set(MACOSX_BUNDLE_BUNDLE_VERSION ${MACOSX_BUNDLE_LONG_VERSION_STRING})
+endif()
+
+set(SOURCES
     src/main.cpp
     src/Application.cpp
     src/LogConfig.cpp
@@ -42,6 +52,14 @@ add_executable(msgui WIN32 MACOSX_BUNDLE
     ${CMAKE_CURRENT_BINARY_DIR}/version.h
 )
 
+if (APPLE)
+    SET(SOURCES ${SOURCES} src/resources/msgui_icon.icns)
+endif()
+
+add_executable(msgui WIN32 MACOSX_BUNDLE
+    ${SOURCES}
+)
+
 target_link_libraries(msgui 
 	msgui::msglib 
 	msgui::msgwidget
@@ -51,7 +69,21 @@ target_link_libraries(msgui
 	Log4Qt::Log4Qt
 )
 
-install(TARGETS msgui DESTINATION bin)
+if (APPLE)
+    SET_SOURCE_FILES_PROPERTIES(src/resources/msgui_icon.icns
+        PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
+    )
+    set_target_properties(
+        msgui
+        PROPERTIES
+        RESOURCE "src/resources/msgui_icon.icns"
+    )
+endif()
+
+if (NOT APPLE)
+    install(TARGETS msgui DESTINATION bin)
+endif()
 
 # IDE source groups
 FILE(GLOB SG_ROOT include/msgui/* src/*.cpp)
@@ -69,6 +101,11 @@ if (ENABLE_INSTALLER)
       include(InstallRequiredSystemLibraries)
 
       install(DIRECTORY "${CMAKE_BINARY_DIR}/windeployqt/" DESTINATION "bin")
+  endif()
+
+  if (APPLE)
+    include(MacDeployQt)
+    MacDeployQt(TARGET msgui)
   endif()
 
   set (CPACK_PACKAGE_NAME "MSGUI")
