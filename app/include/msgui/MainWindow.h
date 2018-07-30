@@ -69,6 +69,7 @@ private slots:
 
 	void openSourceFile(const QString &filename);
 	void markSourceFile(int row, int col);
+	void ensureSourceVisible();
 
 	// process
 	void processRun();

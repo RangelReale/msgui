@@ -631,24 +631,25 @@ void MainWindow::setCmdMode(cmdmode_t mode)
 void MainWindow::updateEnabled()
 {
 	bool is_inactive = !_cmd->isEnabled() || _cmdmode == cmdmode_t::inactive;
-	bool is_debug = !is_inactive && (_cmdmode == cmdmode_t::metadebug || _cmdmode == cmdmode_t::preprocessordebug);
+	bool is_debug = _cmdmode == cmdmode_t::metadebug || _cmdmode == cmdmode_t::preprocessordebug;
+	bool is_debug_and_active = !is_inactive && is_debug;
 
 	_debugStartMenu->setEnabled(!is_inactive);
-	_debugStopMenu->setEnabled(is_debug);
-	_debugContinueMenu->setEnabled(is_debug);
-	_debugStepIntoMenu->setEnabled(is_debug);
-	_debugStepOverMenu->setEnabled(is_debug);
-	_debugStepOutMenu->setEnabled(is_debug);
-	_debugStepIntoBackMenu->setEnabled(is_debug);
-	_debugStepOverBackMenu->setEnabled(is_debug);
-	_debugBacktracetMenu->setEnabled(is_debug);
-	_debugForwardtracetMenu->setEnabled(is_debug);
+	_debugStopMenu->setEnabled(is_debug_and_active);
+	_debugContinueMenu->setEnabled(is_debug_and_active);
+	_debugStepIntoMenu->setEnabled(is_debug_and_active);
+	_debugStepOverMenu->setEnabled(is_debug_and_active);
+	_debugStepOutMenu->setEnabled(is_debug_and_active);
+	_debugStepIntoBackMenu->setEnabled(is_debug_and_active);
+	_debugStepOverBackMenu->setEnabled(is_debug_and_active);
+	_debugBacktracetMenu->setEnabled(is_debug_and_active);
+	_debugForwardtracetMenu->setEnabled(is_debug_and_active);
 
-	_informationEnvironmentMenu->setEnabled(!is_debug);
-	_informationEnvironmentReloadMenu->setEnabled(!is_debug);
-	_informationEnvironmentSysincludesMenu->setEnabled(!is_debug);
-	_informationEnvironmentMacroNamesMenu->setEnabled(!is_debug);
-	_informationEnvironmentMacrosMenu->setEnabled(!is_debug);
+	_informationEnvironmentMenu->setEnabled(!is_debug_and_active);
+	_informationEnvironmentReloadMenu->setEnabled(!is_debug_and_active);
+	_informationEnvironmentSysincludesMenu->setEnabled(!is_debug_and_active);
+	_informationEnvironmentMacroNamesMenu->setEnabled(!is_debug_and_active);
+	_informationEnvironmentMacrosMenu->setEnabled(!is_debug_and_active);
 
 	_backtrace->setVisible(is_debug);
 }
@@ -791,6 +792,9 @@ void MainWindow::showFrame(msglib::cmd::base::ptr frame)
 void MainWindow::showBacktrace(msglib::cmd::backtrace::ptr backtrace)
 {
 	_backtrace->setBacktrace(backtrace);
+
+	// when showing backtrace for the first time, it changes the editor size, and can sometimes make the cursor hidden
+	QTimer::singleShot(500, this, &MainWindow::ensureSourceVisible);
 }
 
 void MainWindow::showCallgraph(msglib::cmd::call_graph::ptr callgraph)
@@ -832,6 +836,11 @@ void MainWindow::markSourceFile(int row, int col)
 		_editor->setBookmark(_editor_bmgroup_showpos, row, true);
 		_editor->ensureLineCenter(row, col);
 	}
+}
+
+void MainWindow::ensureSourceVisible()
+{
+	_editor->ensureCursorVisible();
 }
 
 void MainWindow::processRun()
