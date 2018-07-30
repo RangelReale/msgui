@@ -2,9 +2,9 @@
 #include "msgwidget/highlighter/HL_CPP.h"
 
 #include <QBoxLayout>
-#include <QLabel>
 #include <QFontDatabase>
 #include <QIcon>
+#include <QAbstractTextDocumentLayout>
 #include <QDebug>
 
 namespace msgui {
@@ -28,15 +28,15 @@ Error::Error(QWidget *parent) :
 
 	setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
-	QLabel *icon = new QLabel(_root);
-	icon->setContentsMargins(10, 10, 10, 0);
-	icon->setPixmap(QIcon(":/dialog-error.png").pixmap(QSize(48, 48)));
+	_icon = new QLabel(_root);
+	_icon->setContentsMargins(10, 10, 10, 0);
+	_icon->setPixmap(QIcon(":/dialog-error.png").pixmap(QSize(48, 48)));
 
 	_error = new mredit::Label(_root);
-	_error->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+	//_error->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 	new msgwidget::highlighter::HL_CPP(_error->document());
 
-	layout->addWidget(icon, 1, Qt::AlignHCenter | Qt::AlignTop);
+	layout->addWidget(_icon, 1, Qt::AlignHCenter | Qt::AlignTop);
 	layout->addWidget(_error, 10);
 
 	setWidget(_root);
@@ -69,8 +69,10 @@ void Error::mousePressEvent(QMouseEvent *event)
 void Error::resizeEvent(QResizeEvent *event)
 {
 	QScrollArea::resizeEvent(event);
-	// mredit::Label::sizeHint() returns the size of the QTextDocument
-	_root->resize(_error->sizeHint());
+
+	// must set document width to calculate its height
+	_error->document()->setTextWidth(event->size().width() - _icon->width());
+	_root->resize(QSize(event->size().width(), _error->document()->documentLayout()->documentSize().height()));
 }
 
 }

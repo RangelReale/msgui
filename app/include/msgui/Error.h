@@ -4,6 +4,7 @@
 #include <mredit/Label.h>
 
 #include <QScrollArea>
+#include <QLabel>
 #include <QMouseEvent>
 #include <QResizeEvent>
 
@@ -23,6 +24,7 @@ protected:
 	void resizeEvent(QResizeEvent *event) override;
 private:
 	QWidget *_root;
+	QLabel *_icon;
 	mredit::Label *_error;
 	QString _message;
 };

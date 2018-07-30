@@ -381,7 +381,7 @@ void MainWindow::createWidgets()
 
 	rootlayout->setSizeConstraint(QLayout::SetMinimumSize);
 	rootlayout->addLayout(cmdlayout, 1);
-	rootlayout->addWidget(_error, 1);
+	rootlayout->addWidget(_error, 2);
 	rootlayout->addWidget(_frame, 1);
 	rootlayout->addWidget(splitter1, 13);
 }
