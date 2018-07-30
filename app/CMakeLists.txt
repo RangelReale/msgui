@@ -32,6 +32,7 @@ set(SOURCES
     src/Callgraph.cpp
     src/Log.cpp
     src/Error.cpp
+    src/TemplateKind.cpp
 
     include/msgui/MainWindow.h
     include/msgui/Application.h
@@ -46,6 +47,7 @@ set(SOURCES
     include/msgui/Callgraph.h
     include/msgui/Log.h
     include/msgui/Error.h
+    include/msgui/TemplateKind.h
 
     src/resources/resources.qrc
     src/resources/resources.rc

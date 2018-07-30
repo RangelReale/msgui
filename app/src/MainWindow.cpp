@@ -315,8 +315,20 @@ void MainWindow::createDockedWidgets()
 
 	_viewWindowMenu->addAction(dk_callgraph->toggleViewAction());
 
+	// dock: template kind
+	QDockWidget *dk_templatekind = new QDockWidget("Template Instantiations", this);
+	dk_templatekind->setObjectName("dock_templatekind");
+
+	_templatekind = new TemplateKind(dk_templatekind);
+	connect(_templatekind, &TemplateKind::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
+
+	dk_templatekind->setWidget(_templatekind);
+	addDockWidget(Qt::RightDockWidgetArea, dk_templatekind);
+
+	_viewWindowMenu->addAction(dk_templatekind->toggleViewAction());
+
 	// default docks size
-	resizeDocks({ dk_log, dk_callgraph }, { 600, 600 }, Qt::Horizontal);
+	resizeDocks({ dk_log, dk_callgraph, dk_templatekind }, { 600, 600, 600 }, Qt::Horizontal);
 }
 
 void MainWindow::createWidgets()
@@ -615,6 +627,7 @@ void MainWindow::setCmdMode(cmdmode_t mode)
 			break;
 		case cmdmode_t::immediate:
 			_st_cmdmode->setText("Immediate mode");
+			clearMarkSourceFile();
 			break;
 		case cmdmode_t::metadebug:
 			_st_cmdmode->setText("Meta debugger");
@@ -782,6 +795,10 @@ void MainWindow::showFrame(msglib::cmd::base::ptr frame)
 	if (frame) {
 		_frame->setFrame(frame);
 		_frame->setVisible(true);
+
+		if (auto c = std::dynamic_pointer_cast<msglib::cmd::frame_base>(frame)) {
+			showTemplateKind(c->name, c->kind, c->source_location);
+		}
 	}
 	else
 	{
@@ -815,6 +832,11 @@ void MainWindow::showFilenameList(msglib::cmd::filename_list_base::ptr filename_
 	_editor_current_file = "";
 }
 
+void MainWindow::showTemplateKind(const QString &name, const QString &kind, const QString &sourceLocation)
+{
+	_templatekind->addTemplateKind(name, kind, sourceLocation);
+}
+
 void MainWindow::openSourceFile(const QString &filename)
 {
 	//logger()->info("Open source file: %1", filename);
@@ -824,6 +846,11 @@ void MainWindow::openSourceFile(const QString &filename)
 		_editor->openFile(filename);
 		_editor_current_file = filename;
 	}
+}
+
+void MainWindow::clearMarkSourceFile()
+{
+	_editor->clearBookmarks(_editor_bmgroup_showpos);
 }
 
 void MainWindow::markSourceFile(int row, int col)
@@ -1045,6 +1072,7 @@ void MainWindow::menuDebugStart()
 			cmdlist << "step 1" << "backtrace";
 		}
 
+		_templatekind->clear();
 		_process->writeCmdList(cmdlist);
 	}
 }

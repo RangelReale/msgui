@@ -7,6 +7,7 @@
 #include "msgui/Backtrace.h"
 #include "msgui/Callgraph.h"
 #include "msgui/Log.h"
+#include "msgui/TemplateKind.h"
 
 #include <msglib/CmdParser.h>
 #include <msglib/Cmd.h>
@@ -66,8 +67,10 @@ private slots:
 	void showBacktrace(msglib::cmd::backtrace::ptr backtrace);
 	void showCallgraph(msglib::cmd::call_graph::ptr callgraph);
 	void showFilenameList(msglib::cmd::filename_list_base::ptr filename_list);
+	void showTemplateKind(const QString &name, const QString &kind, const QString &sourceLocation);
 
 	void openSourceFile(const QString &filename);
+	void clearMarkSourceFile();
 	void markSourceFile(int row, int col);
 	void ensureSourceVisible();
 
@@ -164,6 +167,7 @@ private:
 	Frame *_frame;
 	Backtrace *_backtrace;
 	Callgraph *_callgraph;
+	TemplateKind *_templatekind;
 
 	// menu
 	QMenu *_viewWindowMenu;

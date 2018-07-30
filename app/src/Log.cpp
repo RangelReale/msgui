@@ -37,6 +37,8 @@ void Log::addLog(const Log4Qt::LoggingEvent &event)
 	addTopLevelItem(logitem);
 
 	scrollToBottom();
+
+	scheduleDelayedItemsLayout();
 }
 
 void Log::columnResized(int logicalIndex, int oldSize, int newSize)
