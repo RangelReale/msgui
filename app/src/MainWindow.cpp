@@ -907,7 +907,7 @@ void MainWindow::processStandardError(const QString &line)
 
 void MainWindow::processError(const QString &message)
 {
-	logger()->logger("process")->trace("Process error: %1", message);
+	logger()->logger("process")->error("Process error: %1", message);
 }
 
 void MainWindow::processCommand(const QJsonDocument &cmd)
