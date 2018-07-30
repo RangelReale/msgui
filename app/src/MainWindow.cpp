@@ -752,7 +752,7 @@ void MainWindow::cmdExecute(QString cmd)
 
 void MainWindow::onLog(const Log4Qt::LoggingEvent &event)
 {
-	if (event.level() <= Log4Qt::Level::DEBUG_INT) {
+	if (event.loggename() != "Qt" && event.level() <= Log4Qt::Level::DEBUG_INT) {
 		return;
 	}
 	_log->addLog(event);
@@ -763,7 +763,6 @@ void MainWindow::showCode(const QString &code)
 	_editor->clearBookmarks(_editor_bmgroup_showpos);
 	_editor->setPlainText(code);
 	_editor_current_file = "";
-
 }
 
 void MainWindow::showFileAndLine(const QString &fileAndFile)
