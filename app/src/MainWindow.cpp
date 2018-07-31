@@ -252,6 +252,8 @@ void MainWindow::createActions()
 	_informationEnvironmentMacroNamesMenu = informationMenu->addAction(tr("Macro &names"), this, &MainWindow::menuInformationEnvironmentMacroNames);
 	_informationEnvironmentMacrosMenu = informationMenu->addAction(tr("&Macros"), this, &MainWindow::menuInformationEnvironmentMacros);
 
+	_informationEnvironmentReloadMenu->setShortcut(QKeySequence(Qt::Key_F11));
+
 	informationToolBar->addAction(_informationEnvironmentMenu);
 	informationToolBar->addAction(_informationEnvironmentReloadMenu);
 

@@ -20,15 +20,15 @@ Frame::Frame(msglib::cmd::base::ptr frame, QWidget *parent) :
 
 	_kind = new QLabel(this);
 	_kind->setWordWrap(true);
-	_kind->setContentsMargins(0, 0, 0, 0);
+	_kind->setContentsMargins(2, 2, 2, 2);
 
 	_name = new mredit::Label(this);
 	_name->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 	new msgwidget::highlighter::HL_CPP(_name->document());
 	_name->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
 
-	layout->addWidget(_kind);
-	layout->addWidget(_name);
+	layout->addWidget(_kind, 1);
+	layout->addWidget(_name, 5);
 
 	setFrame(frame);
 }
