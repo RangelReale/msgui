@@ -9,11 +9,11 @@
 #include "msgui/Log.h"
 #include "msgui/TemplateKind.h"
 #include "msgui/StartupCode.h"
+#include "msgui/TabEditor.h"
 
 #include <msglib/CmdParser.h>
 #include <msglib/Cmd.h>
 #include <msglib/Process.h>
-#include <mredit/Editor.h>
 #include <history_line_edit.hpp>
 
 #include <QMainWindow>
@@ -22,6 +22,7 @@
 #include <QTreeWidget>
 #include <QListWidget>
 #include <QMenu>
+#include <QTabWidget>
 
 #include <log4qt/logger.h>
 
@@ -75,6 +76,7 @@ private slots:
 	void clearMarkSourceFile();
 	void markSourceFile(int row, int col);
 	void ensureSourceVisible();
+	void editortabCloseRequest(int index);
 
 	// process
 	void processRun();
@@ -155,12 +157,14 @@ private:
 	};
 	SFileAndLine parseFileAndLine(const QString &fileAndLine);
 
+	int findEditorTab(const QString &filename, bool create = false, bool activate = false);
+	TabEditor *findEditorWidget(const QString &filename, bool create = false, bool activate = false);
+	int createTabEditor(const QString &filename);
+
 	// widgets
 	HistoryLineEdit *_cmd;
 	QLabel *_cmdprompt;
-	mredit::Editor *_editor;
-	QString _editor_current_file;
-	int _editor_bmgroup_showpos;
+	QTabWidget *_editortab;
 
 	Log *_log;
 

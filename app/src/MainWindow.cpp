@@ -389,25 +389,16 @@ void MainWindow::createWidgets()
 	connect(_backtrace, &Backtrace::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 	
 	// body: editor
-	_editor = new mredit::Editor(root);
-	_editor->setReadOnly(true);
+	_editortab = new QTabWidget(root);
+	_editortab->setTabsClosable(true);
+	connect(_editortab, &QTabWidget::tabCloseRequested, this, &MainWindow::editortabCloseRequest);
 
-	new msgwidget::highlighter::HL_CPP(_editor->document());
-
-	_editor->marginStacker()->setVisible(mredit::Global::Margin::BookmarkMargin, true);
-	_editor->marginStacker()->setVisible(mredit::Global::Margin::NumberMargin, true);
-	_editor->marginStacker()->setVisible(mredit::Global::Margin::SpaceMargin, true);
-
-	// create a bookmark group to show current line position with right arrow and yellow background
-	_editor_bmgroup_showpos = _editor->bookmarkGroups().addGroup("Position", QIcon(":/arrow-right.png"));
-	QTextBlockFormat spformat;
-	spformat.setBackground(QColor(Qt::yellow));
-	_editor->bookmarkGroups().getGroup(_editor_bmgroup_showpos)->setTextBlockFormat(spformat);
+	createTabEditor("Default");
 
 	QSplitter *splitter1 = new QSplitter(root);
 	splitter1->setOrientation(Qt::Vertical);
 	splitter1->addWidget(_backtrace);
-	splitter1->addWidget(_editor);
+	splitter1->addWidget(_editortab);
 
 	splitter1->setStretchFactor(0, 3);
 	splitter1->setStretchFactor(1, 10);
@@ -701,6 +692,45 @@ void MainWindow::initLog()
 	connect(LogConfig::instance(), &LogConfig::onLog, this, &MainWindow::onLog);
 }
 
+int MainWindow::findEditorTab(const QString &filename, bool create, bool activate)
+{
+	int ret = -1;
+	for (int xi = 0; xi < _editortab->count(); xi++) {
+		TabEditor *editor = dynamic_cast<TabEditor*>(_editortab->widget(xi));
+		if (editor && editor->currentFilename() == filename) {
+			ret = xi;
+			break;
+		}
+	}
+	if (ret == -1 && create) {
+		ret = createTabEditor(filename);
+	}
+	if (ret != -1 && activate) {
+		_editortab->setCurrentIndex(ret);
+	}
+	return ret;
+}
+
+TabEditor *MainWindow::findEditorWidget(const QString &filename, bool create, bool activate)
+{
+	int idx = findEditorTab(filename, create, activate);
+	if (idx != -1)
+		return dynamic_cast<TabEditor*>(_editortab->widget(idx));
+	return nullptr;
+}
+
+int MainWindow::createTabEditor(const QString &filename)
+{
+	QFileInfo fi(filename);
+	QString tabname(filename);
+	if (fi.isAbsolute()) {
+		tabname = fi.fileName();
+	}
+	TabEditor *editor = new TabEditor;
+	editor->setCurrentFilename(filename);
+	return _editortab->addTab(editor, tabname);
+}
+
 MainWindow::SFileAndLine MainWindow::parseFileAndLine(const QString &fileAndLine)
 {
 	SFileAndLine ret;
@@ -802,9 +832,10 @@ void MainWindow::onLog(const Log4Qt::LoggingEvent &event)
 
 void MainWindow::showCode(const QString &code)
 {
-	_editor->clearBookmarks(_editor_bmgroup_showpos);
-	_editor->setPlainText(code);
-	_editor_current_file = "";
+	TabEditor *editor = findEditorWidget("Default", true, true);
+
+	editor->clearMarkSourceCode();
+	editor->setPlainText(code);
 }
 
 void MainWindow::showFileAndLine(const QString &fileAndFile)
@@ -855,9 +886,9 @@ void MainWindow::showFilenameList(msglib::cmd::filename_list_base::ptr filename_
 		code.append("\n");
 	}
 
-	_editor->clearBookmarks(_editor_bmgroup_showpos);
-	_editor->setPlainText(code);
-	_editor_current_file = "";
+	TabEditor *editor = findEditorWidget("Default", true, true);
+	editor->clearMarkSourceCode();
+	editor->setPlainText(code);
 }
 
 void MainWindow::showTemplateKind(const QString &name, const QString &kind, const QString &sourceLocation)
@@ -874,35 +905,44 @@ void MainWindow::setInactive()
 
 void MainWindow::openSourceFile(const QString &filename)
 {
-	//logger()->info("Open source file: %1", filename);
+	//logger()->logger("source")->info("Open source file: %1", filename);
 
-	if (_editor_current_file != filename)
-	{
-		_editor->openFile(filename);
-		_editor_current_file = filename;
-	}
+	TabEditor *editor = findEditorWidget(filename, true, true);
+	editor->openFile(filename);
 }
 
 void MainWindow::clearMarkSourceFile()
 {
-	_editor->clearBookmarks(_editor_bmgroup_showpos);
+	for (int xi = 0; xi < _editortab->count(); xi++)
+	{
+		dynamic_cast<TabEditor*>(_editortab->widget(xi))->clearMarkSourceCode();
+	}
 }
 
 void MainWindow::markSourceFile(int row, int col)
 {
 	//logger()->info("Mark source file: %1 %2", row, col);
 
-	_editor->clearBookmarks(_editor_bmgroup_showpos);
-	if (row >= 0)
+	clearMarkSourceFile();
+	TabEditor *editor = dynamic_cast<TabEditor*>(_editortab->currentWidget());
+	if (editor)
 	{
-		_editor->setBookmark(_editor_bmgroup_showpos, row, true);
-		_editor->ensureLineCenter(row, col);
+		editor->markSourceFile(row, col);
 	}
 }
 
 void MainWindow::ensureSourceVisible()
 {
-	_editor->ensureCursorVisible();
+	TabEditor *editor = dynamic_cast<TabEditor*>(_editortab->currentWidget());
+	if (editor)
+	{
+		editor->ensureCursorVisible();
+	}
+}
+
+void MainWindow::editortabCloseRequest(int index)
+{
+	_editortab->removeTab(index);
 }
 
 void MainWindow::processRun()
