@@ -16,6 +16,8 @@ public:
 	Frame(msglib::cmd::base::ptr frame, QWidget *parent);
 
 	void setFrame(msglib::cmd::base::ptr frame);
+
+	QSize sizeHint() const override;
 signals:
 	void showFileAndLine(const QString &fileAndFile);
 protected:

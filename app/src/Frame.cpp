@@ -1,10 +1,10 @@
 #include "msgui/Frame.h"
 #include "msgwidget/highlighter/HL_CPP.h"
 
-
 #include <QBoxLayout>
 #include <QLabel>
 #include <QFontDatabase>
+#include <QFontMetrics>
 
 namespace msgui {
 
@@ -31,6 +31,16 @@ Frame::Frame(msglib::cmd::base::ptr frame, QWidget *parent) :
 	layout->addWidget(_name);
 
 	setFrame(frame);
+}
+
+QSize Frame::sizeHint() const 
+{
+	QSize sh(QWidget::sizeHint());
+	// default height of 6 lines of text
+	int fh = fontMetrics().height() * 6;
+	if (fh > sh.height())
+		sh.setHeight(fh);
+	return sh;
 }
 
 void Frame::setFrame(msglib::cmd::base::ptr frame)

@@ -402,17 +402,19 @@ void MainWindow::createWidgets()
 
 	QSplitter *splitter1 = new QSplitter(root);
 	splitter1->setOrientation(Qt::Vertical);
+	splitter1->addWidget(_error);
+	splitter1->addWidget(_frame);
 	splitter1->addWidget(_backtrace);
 	splitter1->addWidget(_editortab);
 
-	splitter1->setStretchFactor(0, 3);
-	splitter1->setStretchFactor(1, 10);
+	splitter1->setStretchFactor(0, 2);
+	splitter1->setStretchFactor(1, 2);
+	splitter1->setStretchFactor(2, 3);
+	splitter1->setStretchFactor(3, 8);
 
 	rootlayout->setSizeConstraint(QLayout::SetMinimumSize);
 	rootlayout->addLayout(cmdlayout, 1);
-	rootlayout->addWidget(_error, 2);
-	rootlayout->addWidget(_frame, 1);
-	rootlayout->addWidget(splitter1, 13);
+	rootlayout->addWidget(splitter1, 16);
 }
 
 
