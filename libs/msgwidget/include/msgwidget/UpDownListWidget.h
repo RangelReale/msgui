@@ -21,6 +21,7 @@ signals:
 	void addClicked();
 	void editClicked();
 	void removeClicked();
+	void itemPositionChanged();
 public slots:
 	void moveUp();
 	void moveDown();

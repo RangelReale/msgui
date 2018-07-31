@@ -96,6 +96,7 @@ void MainWindow::newFile()
 {
 	if (maybeSave()) 
 	{
+		_startupcode->loadProject(nullptr);
 		delete _project;
 		_project = new Project(this);
 		setCurrentFile(QString());
@@ -287,6 +288,26 @@ void MainWindow::createStatusBar()
 void MainWindow::createDockedWidgets()
 {
 	// dock windows
+
+	//
+	// left docks
+	//
+
+	// dock: startup code
+	QDockWidget *dk_startupcode = new QDockWidget("Startup Code", this);
+	dk_startupcode->setObjectName("dock_startupcode");
+
+	_startupcode = new StartupCode(dk_startupcode);
+	connect(_startupcode, &StartupCode::showCode, this, &MainWindow::showCode);
+	connect(_startupcode, &StartupCode::changed, this, &MainWindow::processRestart);
+
+	dk_startupcode->setWidget(_startupcode);
+	addDockWidget(Qt::LeftDockWidgetArea, dk_startupcode);
+
+	_viewWindowMenu->addAction(dk_startupcode->toggleViewAction());
+
+	// default docks size
+	resizeDocks({ dk_startupcode }, { 400 }, Qt::Horizontal);
 
 	//
 	// right docks
@@ -668,6 +689,7 @@ void MainWindow::updateEnabled()
 	_informationEnvironmentMacroNamesMenu->setEnabled(!is_debug_and_active);
 	_informationEnvironmentMacrosMenu->setEnabled(!is_debug_and_active);
 
+	_startupcode->setEnabled(!is_debug);
 	_backtrace->setVisible(is_debug);
 }
 
@@ -757,6 +779,8 @@ void MainWindow::closeProject()
 
 void MainWindow::loadProject()
 {
+	_startupcode->loadProject(_project);
+
 	QTimer::singleShot(0, this, &MainWindow::processRestart);
 }
 

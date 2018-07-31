@@ -8,6 +8,7 @@
 #include "msgui/Callgraph.h"
 #include "msgui/Log.h"
 #include "msgui/TemplateKind.h"
+#include "msgui/StartupCode.h"
 
 #include <msglib/CmdParser.h>
 #include <msglib/Cmd.h>
@@ -171,6 +172,7 @@ private:
 	Backtrace *_backtrace;
 	Callgraph *_callgraph;
 	TemplateKind *_templatekind;
+	StartupCode *_startupcode;
 
 	// menu
 	QMenu *_viewWindowMenu;

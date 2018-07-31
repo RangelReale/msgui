@@ -21,5 +21,12 @@
     <file>view-calendar-list.png</file>
     <file>story-editor.png</file>
     <file>dialog-error.png</file>
+    <file>arrow-down.png</file>
+    <file>arrow-down-double.png</file>
+    <file>arrow-up.png</file>
+    <file>arrow-up-double.png</file>
+    <file>list-add.png</file>
+    <file>list-remove.png</file>
+    <file>mail-mark-task.png</file>
 </qresource>
 </RCC>

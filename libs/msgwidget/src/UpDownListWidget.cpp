@@ -17,17 +17,24 @@ UpDownListWidget::UpDownListWidget(QWidget *parent) : QWidget(parent)
 	QVBoxLayout *btnlayout = new QVBoxLayout;
 	layout->addLayout(btnlayout);
 
-	_btnAdd = new QPushButton(tr("Add"), this);
-	_btnEdit = new QPushButton(tr("Edit"), this);
-	_btnRemove = new QPushButton(tr("Remove"), this);
+	_btnAdd = new QPushButton(QIcon(":/list-add.png"), "", this);
+	_btnEdit = new QPushButton(QIcon(":/mail-mark-task.png"), "", this);
+	_btnRemove = new QPushButton(QIcon(":/list-remove.png"), "", this);
 	_btnAdd->setVisible(false);
+	_btnAdd->setToolTip(tr("Add"));
 	_btnEdit->setVisible(false);
+	_btnEdit->setToolTip(tr("Edit"));
 	_btnRemove->setVisible(false);
+	_btnRemove->setToolTip(tr("Remove"));
 
-	QPushButton *btnTop = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), tr("Top"), this);
-	QPushButton *btnUp = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), tr("Up"), this);
-	QPushButton *btnDown = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), tr("Down"), this);
-	QPushButton *btnBottom = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), tr("Bottom"), this);
+	QPushButton *btnTop = new QPushButton(QIcon(":/arrow-up-double.png"), "", this);
+	QPushButton *btnUp = new QPushButton(QIcon(":/arrow-up.png"), "", this);
+	QPushButton *btnDown = new QPushButton(QIcon(":/arrow-down.png"), "", this);
+	QPushButton *btnBottom = new QPushButton(QIcon(":/arrow-down-double.png"), "", this);
+	btnTop->setToolTip(tr("Top"));
+	btnUp->setToolTip(tr("Up"));
+	btnDown->setToolTip(tr("Down"));
+	btnBottom->setToolTip(tr("Bottom"));
 
 	connect(_btnAdd, &QPushButton::clicked, this, &UpDownListWidget::addClicked);
 	connect(_btnEdit, &QPushButton::clicked, this, &UpDownListWidget::editClicked);
@@ -77,6 +84,8 @@ void UpDownListWidget::moveUp()
 	QListWidgetItem *currentItem = _listwidget->takeItem(currentIndex);
 	_listwidget->insertItem(currentIndex - 1, currentItem);
 	_listwidget->setCurrentRow(currentIndex - 1);
+
+	emit itemPositionChanged();
 }
 
 void UpDownListWidget::moveDown()
@@ -87,6 +96,8 @@ void UpDownListWidget::moveDown()
 	QListWidgetItem *currentItem = _listwidget->takeItem(currentIndex);
 	_listwidget->insertItem(currentIndex + 1, currentItem);
 	_listwidget->setCurrentRow(currentIndex + 1);
+
+	emit itemPositionChanged();
 }
 
 void UpDownListWidget::moveTop()
@@ -97,6 +108,8 @@ void UpDownListWidget::moveTop()
 	QListWidgetItem *currentItem = _listwidget->takeItem(currentIndex);
 	_listwidget->insertItem(0, currentItem);
 	_listwidget->setCurrentRow(0);
+
+	emit itemPositionChanged();
 }
 
 void UpDownListWidget::moveBottom()
@@ -107,6 +120,8 @@ void UpDownListWidget::moveBottom()
 	QListWidgetItem *currentItem = _listwidget->takeItem(currentIndex);
 	_listwidget->insertItem(_listwidget->count(), currentItem);
 	_listwidget->setCurrentRow(_listwidget->count() - 1);
+
+	emit itemPositionChanged();
 }
 
 }

@@ -33,6 +33,7 @@ set(SOURCES
     src/Log.cpp
     src/Error.cpp
     src/TemplateKind.cpp
+    src/StartupCode.cpp
 
     include/msgui/MainWindow.h
     include/msgui/Application.h
@@ -48,6 +49,7 @@ set(SOURCES
     include/msgui/Log.h
     include/msgui/Error.h
     include/msgui/TemplateKind.h
+    include/msgui/StartupCode.h
 
     src/resources/resources.qrc
     src/resources/resources.rc
