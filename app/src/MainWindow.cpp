@@ -843,9 +843,10 @@ void MainWindow::showTemplateKind(const QString &name, const QString &kind, cons
 
 void MainWindow::setInactive()
 {
-
+	_error->setMessage();
+	_backtrace->clear();
+	_callgraph->clear();
 }
-
 
 void MainWindow::openSourceFile(const QString &filename)
 {
