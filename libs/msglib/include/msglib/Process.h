@@ -33,6 +33,9 @@ signals:
 	void onCommand(const QJsonDocument &cmd);
 	void onPrompt(const QJsonDocument &cmd);
 	void onCommandError(const QJsonDocument &cmd);
+
+	void onCmdBegin();
+	void onCmdEnd();
 public slots:
 	void run();
 	void quit();

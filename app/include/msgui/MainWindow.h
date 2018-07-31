@@ -69,6 +69,7 @@ private slots:
 	void showFilenameList(msglib::cmd::filename_list_base::ptr filename_list);
 	void showTemplateKind(const QString &name, const QString &kind, const QString &sourceLocation);
 
+	void setInactive();
 	void openSourceFile(const QString &filename);
 	void clearMarkSourceFile();
 	void markSourceFile(int row, int col);
@@ -83,6 +84,8 @@ private slots:
 	void processStandardOutput(const QString &line);
 	void processStandardError(const QString &line);
 	void processError(const QString &message);
+	void processCmdBegin();
+	void processCmdEnd();
 
 	void processCommand(const QJsonDocument &cmd);
 	void processPrompt(const QJsonDocument &cmd);

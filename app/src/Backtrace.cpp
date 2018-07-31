@@ -51,6 +51,8 @@ void Backtrace::setBacktrace(msglib::cmd::backtrace::ptr backtrace)
 			item->setText(2, b->kind);
 			QFileInfo fi(b->source_location);
 			item->setText(3, fi.fileName());
+
+			scheduleDelayedItemsLayout();
 		}
 	}
 	_backtrace = backtrace;

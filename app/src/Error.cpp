@@ -48,7 +48,11 @@ void Error::setMessage(const QString &message)
 {
 	if (!message.isEmpty())
 	{
-		_error->setPlainText(message);
+		QString msg(_error->toPlainText());
+		if (!msg.isEmpty()) msg.append("\n");
+		msg.append(message);
+
+		_error->setPlainText(msg);
 		setVisible(true);
 	}
 	else

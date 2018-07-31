@@ -618,6 +618,10 @@ void MainWindow::setCmdMode(cmdmode_t mode)
 {
 	if (mode == cmdmode_t::inactive || mode != _cmdmode)
 	{
+		if (mode == cmdmode_t::inactive) {
+			setInactive();
+		}
+
 		_cmdmode = mode;
 
 		switch (mode)
@@ -837,6 +841,12 @@ void MainWindow::showTemplateKind(const QString &name, const QString &kind, cons
 	_templatekind->addTemplateKind(name, kind, sourceLocation);
 }
 
+void MainWindow::setInactive()
+{
+
+}
+
+
 void MainWindow::openSourceFile(const QString &filename)
 {
 	//logger()->info("Open source file: %1", filename);
@@ -917,7 +927,7 @@ void MainWindow::processStateChanged(QProcess::ProcessState newState)
 void MainWindow::processSendCommand(const QJsonDocument &line)
 {
 	setEnabledCmd(false);
-	_error->setMessage();
+	//_error->setMessage();
 
 	logger()->logger("process")->trace("Sending command: %1", QString(line.toJson()));
 }
@@ -935,6 +945,16 @@ void MainWindow::processStandardError(const QString &line)
 void MainWindow::processError(const QString &message)
 {
 	logger()->logger("process")->error("Process error: %1", message);
+}
+
+void MainWindow::processCmdBegin()
+{
+	_error->setMessage();
+}
+
+void MainWindow::processCmdEnd()
+{
+
 }
 
 void MainWindow::processCommand(const QJsonDocument &cmd)
@@ -1177,6 +1197,9 @@ void MainWindow::createProcess()
 		connect(_process, &msglib::Process::onStandardOutput, this, &MainWindow::processStandardOutput);
 		connect(_process, &msglib::Process::onStandardError, this, &MainWindow::processStandardError);
 		connect(_process, &msglib::Process::onError, this, &MainWindow::processError);
+
+		connect(_process, &msglib::Process::onCmdBegin, this, &MainWindow::processCmdBegin);
+		connect(_process, &msglib::Process::onCmdEnd, this, &MainWindow::processCmdEnd);
 
 		connect(_process, &msglib::Process::onCommand, this, &MainWindow::processCommand);
 		connect(_process, &msglib::Process::onPrompt, this, &MainWindow::processPrompt);

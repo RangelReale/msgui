@@ -55,6 +55,8 @@ void Process::writeRawCommand(const QJsonDocument &command)
 
 void Process::writeCmd(const QString &cmd)
 {
+	emit onCmdBegin();
+
 	QJsonObject cmddata;
 	cmddata["type"] = "cmd";
 	cmddata["cmd"] = escapeCmd(cmd);
@@ -68,6 +70,8 @@ void Process::writeCmd(const QString &cmd)
 void Process::writeCmdList(const QStringList &cmdlist)
 {
 	if (cmdlist.length() == 0) return;
+
+	emit onCmdBegin();
 
 	QJsonDocument first;
 	if (_isprompt && _pendingcmds.size() == 0)
@@ -256,6 +260,7 @@ void Process::parseLine(const QString &line)
 		}
 
 		_isprompt = true;
+		emit onCmdEnd();
 		emit onPrompt(doc);
 	}
 }
