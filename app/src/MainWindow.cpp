@@ -274,15 +274,19 @@ void MainWindow::createStatusBar()
 {
 	_st_cmdmode = new QLabel("Command mode", statusBar());
 	_st_process = new QLabel("Process", statusBar());
+	_st_filename = new QLabel("", statusBar());
 
 	_st_cmdmode->setMinimumWidth(150);
 	_st_process->setMinimumWidth(120);
+	_st_filename->setMinimumWidth(350);
 
 	_st_cmdmode->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	_st_process->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	_st_filename->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 
 	statusBar()->addWidget(_st_cmdmode);
 	statusBar()->addWidget(_st_process);
+	statusBar()->addWidget(_st_filename);
 }
 
 void MainWindow::createDockedWidgets()
@@ -392,6 +396,7 @@ void MainWindow::createWidgets()
 	_editortab = new QTabWidget(root);
 	_editortab->setTabsClosable(true);
 	connect(_editortab, &QTabWidget::tabCloseRequested, this, &MainWindow::editortabCloseRequest);
+	connect(_editortab, &QTabWidget::currentChanged, this, &MainWindow::editortabCurrentChanged);
 
 	createTabEditor("Default");
 
@@ -943,6 +948,16 @@ void MainWindow::ensureSourceVisible()
 void MainWindow::editortabCloseRequest(int index)
 {
 	_editortab->removeTab(index);
+}
+
+void MainWindow::editortabCurrentChanged(int index)
+{
+	if (index != -1) {
+		_st_filename->setText(dynamic_cast<TabEditor*>(_editortab->widget(index))->currentFilename());
+	}
+	else {
+		_st_filename->setText("");
+	}
 }
 
 void MainWindow::processRun()

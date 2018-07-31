@@ -77,6 +77,7 @@ private slots:
 	void markSourceFile(int row, int col);
 	void ensureSourceVisible();
 	void editortabCloseRequest(int index);
+	void editortabCurrentChanged(int index);
 
 	// process
 	void processRun();
@@ -170,6 +171,7 @@ private:
 
 	QLabel *_st_cmdmode;
 	QLabel *_st_process;
+	QLabel *_st_filename;
 
 	Error *_error;
 	Frame *_frame;
