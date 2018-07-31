@@ -14,6 +14,10 @@ The code is tested on Windows and Ubuntu 16.04.
 
 ![Screenshot](doc/screenshot.png)
 
+## Download
+
+Binary installers are available on the [releases](https://github.com/RangelReale/msgui/releases) page.
+
 ### How to debug
 
 Run the application, press F4 to open the project settings, and on the startup code configuration, add the template code you want to test. Alternativelly, add an include path in the process params, and #include <myfile.cpp> on the prompt, or on the startup code setting.
