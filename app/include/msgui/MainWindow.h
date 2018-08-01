@@ -102,6 +102,7 @@ private slots:
 
 	void menuInformationEnvironment();
 	void menuInformationEnvironmentReload();
+	void menuInformationEnvironmentRestart();
 	void menuInformationEnvironmentSysincludes();
 	void menuInformationEnvironmentMacroNames();
 	void menuInformationEnvironmentMacros();
@@ -199,6 +200,7 @@ private:
 
 	QAction *_informationEnvironmentMenu;
 	QAction *_informationEnvironmentReloadMenu;
+	QAction *_informationEnvironmentRestartMenu;
 	QAction *_informationEnvironmentSysincludesMenu;
 	QAction *_informationEnvironmentMacroNamesMenu;
 	QAction *_informationEnvironmentMacrosMenu;

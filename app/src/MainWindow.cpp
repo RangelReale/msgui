@@ -247,15 +247,17 @@ void MainWindow::createActions()
 	informationToolBar->setObjectName("information_toolbar");
 
 	_informationEnvironmentMenu = informationMenu->addAction(QIcon(":/games-config-background.png"), tr("&Environment"), this, &MainWindow::menuInformationEnvironment);
-	_informationEnvironmentReloadMenu = informationMenu->addAction(QIcon(":/view-refresh.png"), tr("&Reload environment"), this, &MainWindow::menuInformationEnvironmentReload);
+	_informationEnvironmentReloadMenu = informationMenu->addAction(tr("&Reload environment"), this, &MainWindow::menuInformationEnvironmentReload);
+	_informationEnvironmentRestartMenu = informationMenu->addAction(QIcon(":/view-refresh.png"), tr("Rest&art process"), this, &MainWindow::menuInformationEnvironmentRestart);
 	_informationEnvironmentSysincludesMenu = informationMenu->addAction(tr("&System includes"), this, &MainWindow::menuInformationEnvironmentSysincludes);
 	_informationEnvironmentMacroNamesMenu = informationMenu->addAction(tr("Macro &names"), this, &MainWindow::menuInformationEnvironmentMacroNames);
 	_informationEnvironmentMacrosMenu = informationMenu->addAction(tr("&Macros"), this, &MainWindow::menuInformationEnvironmentMacros);
 
-	_informationEnvironmentReloadMenu->setShortcut(QKeySequence(Qt::Key_F11));
+	_informationEnvironmentReloadMenu->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F12));
+	_informationEnvironmentRestartMenu->setShortcut(QKeySequence(Qt::Key_F12));
 
 	informationToolBar->addAction(_informationEnvironmentMenu);
-	informationToolBar->addAction(_informationEnvironmentReloadMenu);
+	informationToolBar->addAction(_informationEnvironmentRestartMenu);
 
 	// Help
 	QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
@@ -1115,6 +1117,12 @@ void MainWindow::menuInformationEnvironmentReload()
 		}
 	}
 }
+
+void MainWindow::menuInformationEnvironmentRestart()
+{
+	processRestart();
+}
+
 
 void MainWindow::menuInformationEnvironmentSysincludes()
 {
