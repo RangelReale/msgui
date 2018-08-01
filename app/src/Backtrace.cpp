@@ -19,9 +19,9 @@ Backtrace::Backtrace(QWidget *parent) :
 	setColumnCount(3);
 	setHeaderLabels(QStringList() << "#" << "Name" << "Kind" << "Source");
 	header()->resizeSection(0, 10);
-	header()->resizeSection(1, 330);
-	header()->resizeSection(2, 280);
-	header()->resizeSection(3, 170);
+	header()->resizeSection(1, 400);
+	header()->resizeSection(2, 200);
+	//header()->resizeSection(3, 170);
 
 	connect(this, &QTreeWidget::itemClicked, this, &Backtrace::btItemClicked);
 	connect(header(), &QHeaderView::sectionResized, this, &Backtrace::columnResized);
