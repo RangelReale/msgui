@@ -36,6 +36,7 @@ set(SOURCES
     src/StartupCode.cpp
     src/TabEditor.cpp
     src/Util.cpp
+    src/NewReleaseWindow.cpp
 
     include/msgui/interfaces.h
     include/msgui/MainWindow.h
@@ -55,6 +56,7 @@ set(SOURCES
     include/msgui/StartupCode.h
     include/msgui/TabEditor.h
     include/msgui/Util.h
+    include/msgui/NewReleaseWindow.h
 
     src/resources/resources.qrc
     src/resources/resources.rc

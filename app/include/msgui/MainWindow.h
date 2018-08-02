@@ -67,6 +67,7 @@ private slots:
 	void checkForUpdates();
 	void ghrelLog(const QString &message);
 	void ghrelError(const QString &message);
+	void ghrelInfo(msgwidget::GithubReleaseInfo info);
 
 	// widget
 	void cmdExecute(QString cmd);

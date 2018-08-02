@@ -3,6 +3,7 @@
 #include "msgui/ProjectSettings.h"
 #include "msgui/LogWindow.h"
 #include "msgui/Util.h"
+#include "msgui/NewReleaseWindow.h"
 
 #include <msgwidget/highlighter/HL_CPP.h>
 
@@ -54,6 +55,7 @@ MainWindow::MainWindow(const QString &filename) :
 	setUnifiedTitleAndToolBarOnMac(true);
 
 	_ghrel = new msgwidget::GithubRelease(this);
+	connect(_ghrel, &msgwidget::GithubRelease::onInfo, this, &MainWindow::ghrelInfo);
 	connect(_ghrel, &msgwidget::GithubRelease::onLog, this, &MainWindow::ghrelLog);
 	connect(_ghrel, &msgwidget::GithubRelease::onError, this, &MainWindow::ghrelError);
 
@@ -78,11 +80,6 @@ MainWindow::~MainWindow()
 		_process->quit();
 	}
 
-	if (LogWindow::instance())
-	{
-		LogWindow::instance()->close();
-	}
-
 	closeProject();
 }
 
@@ -90,13 +87,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (maybeSave()) 
 	{
-		writeSettings();
 		event->accept();
 	}
 	else 
 	{
 		event->ignore();
 	}
+	writeSettings();
+
+	if (LogWindow::instance()) LogWindow::instance()->close();
+	if (NewReleaseWindow::instance()) NewReleaseWindow::instance()->close();
 }
 
 void MainWindow::newFile()
@@ -1332,12 +1332,34 @@ void MainWindow::checkForUpdates()
 
 void MainWindow::ghrelLog(const QString &message)
 {
-	logger()->logger("Qt")->trace(message);
+	//logger()->logger("Qt")->trace(message);
 }
 
 void MainWindow::ghrelError(const QString &message)
 {
 	logger()->logger("updatecheck")->error(message);
+}
+
+void MainWindow::ghrelInfo(msgwidget::GithubReleaseInfo info)
+{
+	QRegularExpression vre("^v(\\d+)\\.(\\d+)\\.(\\*|\\d+)$");
+	QRegularExpressionMatch mvre = vre.match(info.tag_name);
+	if (mvre.hasMatch()) {
+		QString newVersion(QString("%1.%2.%3.0").arg(mvre.captured(1)).arg(mvre.captured(2)).arg(mvre.captured(3)));
+		QString curVersion(VER_FILEVERSION_STR);
+
+		logger()->logger("updatecheck")->info(QString("Version: latest [%1] current [%2]").
+			arg(newVersion).arg(curVersion));
+
+		if (newVersion != curVersion) {
+			if (!NewReleaseWindow::instance()) {
+				new NewReleaseWindow;
+			}
+			NewReleaseWindow::instance()->setInfo(info);
+			NewReleaseWindow::instance()->show();
+		}
+	}
+
 }
 
 }

@@ -16,9 +16,6 @@ public:
 	QString tag_name;
 	QString name;
 	QString body;
-	int filesize;
-	QString filename;
-	QString browser_download_url;
 };
 Q_DECLARE_METATYPE(GithubReleaseInfo)
 

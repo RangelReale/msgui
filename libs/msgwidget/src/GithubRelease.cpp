@@ -7,6 +7,8 @@
 #include <QUrl>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 
 namespace msgwidget {
 
@@ -43,40 +45,31 @@ public:
 		//reply->setSslConfiguration(conf);
 
 		connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &GithubReleasePrivate::httpError);
-		connect(reply, &QNetworkReply::finished, this, &GithubReleasePrivate::httpFinished);
 		connect(reply, &QIODevice::readyRead, this, &GithubReleasePrivate::httpReadyRead);
-		connect(reply, &QNetworkReply::downloadProgress, this, &GithubReleasePrivate::httpDownloadProcess);
 	}
 private slots:
 	void slotAuthenticationRequired(QNetworkReply *, QAuthenticator *authenticator)
 	{
 		Q_Q(GithubRelease);
-		emit q->onLog("slotAuthenticationRequired");
+		emit q->onError("Error: authentication required");
 	}
 
 	void sslErrors(QNetworkReply *, const QList<QSslError> &errors)
 	{
 		Q_Q(GithubRelease);
-		emit q->onLog("sslErrors");
+		emit q->onError("Error: SSL error");
 	}
 
 	void httpError(QNetworkReply::NetworkError code)
 	{
 		Q_Q(GithubRelease);
-		emit q->onLog(QString("httpError: %1").arg(reply->errorString()));
-	}
-
-	void httpFinished()
-	{
-		Q_Q(GithubRelease);
-		emit q->onLog("httpFinished");
+		emit q->onError(QString("Network error: %1").arg(reply->errorString()));
 	}
 
 	void httpReadyRead()
 	{
 		Q_Q(GithubRelease);
 		QByteArray data = reply->readAll();
-		emit q->onLog(QString("httpReadyRead: %1").arg(QString::fromUtf8(data)));
 
 		QJsonParseError error;
 		QJsonDocument doc = QJsonDocument::fromJson(data, &error);
@@ -87,26 +80,14 @@ private slots:
 		
 		GithubReleaseInfo info;
 		QJsonObject iobj = doc.object();
-		info.url = iobj.value("url").toString();
-		info.id = iobj.value("id").toInt();
-		info.html_url = iobj.value("html_url").toString();
-		info.tag_name = iobj.value("tag_name").toString();
-		info.name = iobj.value("name").toString();
-		info.body = iobj.value("body").toString();
-		info.filesize = iobj.value("assets").toObject().value("size").toInt();
-		info.filename = iobj.value("assets").toObject().value("name").toString();
-		info.browser_download_url = iobj.value("assets").toObject().value("browser_download_url").toString();
-		info.body = iobj.value("body").toString();
-		info.body = iobj.value("body").toString();
-
-		//emit q->onLog(QString("httpReadyRead: %1").arg(QString::fromUtf8(data)));
-		emit q->onLog(QString("httpReadyRead: %1").arg(QString::fromUtf8(doc.toJson(QJsonDocument::Indented))));
-	}
-
-	void httpDownloadProcess(qint64 bytesReceived, qint64 bytesTotal)
-	{
-		Q_Q(GithubRelease);
-		emit q->onLog(QString("Process: %1 / %2").arg(bytesReceived).arg(bytesTotal));
+		info.url = iobj["url"].toString();
+		info.id = iobj["id"].toInt();
+		info.html_url = iobj["html_url"].toString();
+		info.tag_name = iobj["tag_name"].toString();
+		info.name = iobj["name"].toString();
+		info.body = iobj["body"].toString();
+		QJsonArray assets = iobj["assets"].toArray();
+		emit q->onInfo(info);
 	}
 };
 
