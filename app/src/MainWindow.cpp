@@ -416,7 +416,7 @@ void MainWindow::createWidgets()
 	splitter1->setStretchFactor(2, 3);
 	splitter1->setStretchFactor(3, 6);
 
-	rootlayout->setSizeConstraint(QLayout::SetMinimumSize);
+	//rootlayout->setSizeConstraint(QLayout::SetMinimumSize);
 	rootlayout->addLayout(cmdlayout, 1);
 	rootlayout->addWidget(splitter1, 10);
 }
