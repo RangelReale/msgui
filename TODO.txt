@@ -1,0 +1,4 @@
+* Fullscreen forwardtrace
+* Highligh user-defined words/regex
+* Ident c++ types
+* Editor must ident/unident with TAB
