@@ -3,7 +3,7 @@ PROJECT(msgui)
 
 set(MSGUI_NUMBER 1)
 set(MSGUI_VERSION 0)
-set(MSGUI_BUILD_NUMBER 119)
+set(MSGUI_BUILD_NUMBER 120)
 
 set (CMAKE_CXX_STANDARD 14)
 
@@ -26,7 +26,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 COMPONENTS Core Widgets Xml REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Xml Network REQUIRED)
 
 # Find the mredit library
 find_package(mredit REQUIRED)

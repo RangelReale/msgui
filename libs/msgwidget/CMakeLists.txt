@@ -2,6 +2,7 @@
 set(SOURCES
     src/UpDownListWidget.cpp
     src/WidgetListWidget.cpp
+    src/GithubRelease.cpp
     src/highlighter/HL_CPP.cpp
     src/highlighter/HL_Error.cpp
     src/internal/WidgetListWidgetViewport.cpp
@@ -9,6 +10,7 @@ set(SOURCES
     
     include/msgwidget/UpDownListWidget.h
     include/msgwidget/WidgetListWidget.h
+    include/msgwidget/GithubRelease.h
     include/msgwidget/highlighter/HL_CPP.h
     include/msgwidget/highlighter/HL_Error.h
     include/msgwidget/internal/WidgetListWidgetViewport.h
@@ -28,6 +30,7 @@ target_include_directories(msgwidget PUBLIC
 
 set (LIBS
     Qt5::Widgets
+	Qt5::Network
 )
 
 target_link_libraries(msgwidget

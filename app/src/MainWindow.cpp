@@ -53,6 +53,10 @@ MainWindow::MainWindow(const QString &filename) :
 
 	setUnifiedTitleAndToolBarOnMac(true);
 
+	_ghrel = new msgwidget::GithubRelease(this);
+	connect(_ghrel, &msgwidget::GithubRelease::onLog, this, &MainWindow::ghrelLog);
+	connect(_ghrel, &msgwidget::GithubRelease::onError, this, &MainWindow::ghrelError);
+
 	setEnabledCmd(false);
 
 	if (filename.isEmpty())
@@ -64,6 +68,8 @@ MainWindow::MainWindow(const QString &filename) :
 	{
 		loadFile(filename);
 	}
+
+	QTimer::singleShot(2000, this, &MainWindow::checkForUpdates);
 }
 
 MainWindow::~MainWindow()
@@ -1317,6 +1323,21 @@ QString MainWindow::identCPPType(const QString &type)
 		return Util::identCPPType(type);
 	}
 	return type;
+}
+
+void MainWindow::checkForUpdates()
+{
+	_ghrel->load("RangelReale", "msgui");
+}
+
+void MainWindow::ghrelLog(const QString &message)
+{
+	logger()->logger("Qt")->trace(message);
+}
+
+void MainWindow::ghrelError(const QString &message)
+{
+	logger()->logger("updatecheck")->error(message);
 }
 
 }

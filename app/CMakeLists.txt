@@ -59,6 +59,8 @@ set(SOURCES
     src/resources/resources.qrc
     src/resources/resources.rc
     ${CMAKE_CURRENT_BINARY_DIR}/version.h
+    
+    ../TODO.txt
 )
 
 if (APPLE)
@@ -74,6 +76,7 @@ target_link_libraries(msgui
 	msgui::msgwidget
 	Qt5::Widgets 
 	Qt5::Xml
+	Qt5::Network
 	mredit::mredit
 	Log4Qt::Log4Qt
 )

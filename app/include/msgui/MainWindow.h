@@ -15,6 +15,8 @@
 #include <msglib/CmdParser.h>
 #include <msglib/Cmd.h>
 #include <msglib/Process.h>
+#include <msgwidget/GithubRelease.h>
+
 #include <history_line_edit.hpp>
 
 #include <QMainWindow>
@@ -61,6 +63,10 @@ private slots:
 	bool save();
 	bool saveAs();
 	void documentWasModified();
+
+	void checkForUpdates();
+	void ghrelLog(const QString &message);
+	void ghrelError(const QString &message);
 
 	// widget
 	void cmdExecute(QString cmd);
@@ -228,6 +234,8 @@ private:
 	QString _program;
 	cmdmode_t _cmdmode;
 	msglib::cmd::parser _cmdparser;
+
+	msgwidget::GithubRelease *_ghrel;
 };
 
 }
