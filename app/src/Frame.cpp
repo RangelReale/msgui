@@ -1,4 +1,5 @@
 #include "msgui/Frame.h"
+#include "msgui/Util.h"
 #include "msgwidget/highlighter/HL_CPP.h"
 
 #include <QBoxLayout>
@@ -8,8 +9,8 @@
 
 namespace msgui {
 
-Frame::Frame(msglib::cmd::base::ptr frame, QWidget *parent) :
-	QWidget(parent), _frame(frame)
+Frame::Frame(msglib::cmd::base::ptr frame, itf::Configuration *configuration, QWidget *parent) :
+	QWidget(parent), _configuration(configuration), _frame(frame)
 {
 	//setStyleSheet("border: 0px; background-color: yellow;");
 
@@ -50,22 +51,27 @@ void Frame::setFrame(msglib::cmd::base::ptr frame)
 		if (auto c = std::dynamic_pointer_cast<msglib::cmd::frame_base>(frame)) {
 			_kind->setStyleSheet("background-color: yellow;");
 			_kind->setText(c->kind);
-			_name->setPlainText(c->name);
+			_name->setPlainText(_configuration->identCPPType(c->name));
+
+			_name->setToolTip(QString("<pre>%1</pre>").arg(Util::identCPPType(c->name).toHtmlEscaped()));
 		}
 		else if (auto c = std::dynamic_pointer_cast<msglib::cmd::type_>(frame)) {
 			_kind->setStyleSheet("background-color: yellow;");
 			_kind->setText("Type");
-			_name->setPlainText(c->type_name);
+			_name->setPlainText(_configuration->identCPPType(c->type_name));
+			_name->setToolTip(QString("<pre>%1</pre>").arg(Util::identCPPType(c->type_name).toHtmlEscaped()));
 		}
 		else if (auto c = std::dynamic_pointer_cast<msglib::cmd::cpp_code>(frame)) {
 			_kind->setStyleSheet("background-color: yellow;");
 			_kind->setText("Code");
 			_name->setPlainText(c->code);
+			_name->setToolTip("");
 		}
 		else {
 			_kind->setStyleSheet("");
 			_kind->setText("");
 			_name->setPlainText("");
+			_name->setToolTip("");
 		}
 	}
 	else

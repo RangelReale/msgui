@@ -1,4 +1,5 @@
 #include "msgui/Callgraph.h"
+#include "msgui/Util.h"
 #include "msgwidget/highlighter/HL_CPP.h"
 
 #include <mredit/Label.h>
@@ -14,8 +15,8 @@
 
 namespace msgui {
 
-Callgraph::Callgraph(QWidget *parent) :
-	QTreeWidget(parent), _callgraph()
+Callgraph::Callgraph(itf::Configuration *configuration, QWidget *parent) :
+	QTreeWidget(parent), _configuration(configuration), _callgraph()
 {
 	setColumnCount(3);
 	setHeaderLabels(QStringList() << "Name" << "Kind" << "Source");
@@ -49,7 +50,7 @@ void Callgraph::setCallgraph(msglib::cmd::call_graph::ptr callgraph)
 				mredit::Label *namelbl = new mredit::Label(this);
 				namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 				new msgwidget::highlighter::HL_CPP(namelbl->document());
-				namelbl->setPlainText(node->node->name);
+				namelbl->setPlainText(_configuration->identCPPType(node->node->name));
 				setItemWidget(item, 0, namelbl);
 
 				item->setText(1, node->node->kind);
@@ -58,6 +59,8 @@ void Callgraph::setCallgraph(msglib::cmd::call_graph::ptr callgraph)
 					item->setText(2, fi.fileName());
 				else
 					item->setText(2, node->node->source_location);
+
+				item->setToolTip(0, QString("<pre>%1</pre>").arg(Util::identCPPType(node->node->name).toHtmlEscaped()));
 
 				item->setExpanded(true);
 			}

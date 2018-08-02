@@ -1,16 +1,16 @@
 #pragma once
 
 #include <msglib/Cmd.h>
-#include <mredit/Label.h>
+#include <mredit/Editor.h>
 
-#include <QScrollArea>
+#include <QFrame>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QResizeEvent>
 
 namespace msgui {
 
-class Error : public QScrollArea
+class Error : public QFrame
 {
 	Q_OBJECT
 public:
@@ -21,11 +21,9 @@ signals:
 	void showFileAndLine(const QString &fileAndFile);
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
-	void resizeEvent(QResizeEvent *event) override;
 private:
-	QWidget *_root;
 	QLabel *_icon;
-	mredit::Label *_error;
+	mredit::Editor *_error;
 	QString _message;
 };
 

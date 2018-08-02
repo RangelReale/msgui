@@ -1,4 +1,5 @@
 * Fullscreen forwardtrace
 * Highligh user-defined words/regex
-* Ident c++ types
 * Editor must ident/unident with TAB
+* Copy/paste error and log messages
+* Startup code on main window disable only buttons on debug

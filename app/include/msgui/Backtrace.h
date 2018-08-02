@@ -1,5 +1,7 @@
 #pragma once
 
+#include "msgui/interfaces.h"
+
 #include <msglib/Cmd.h>
 
 #include <QLabel>
@@ -11,7 +13,7 @@ class Backtrace : public QTreeWidget
 {
 	Q_OBJECT
 public:
-	Backtrace(QWidget *parent);
+	Backtrace(itf::Configuration *configuration, QWidget *parent);
 
 	void setBacktrace(msglib::cmd::backtrace::ptr backtrace);
 signals:
@@ -20,6 +22,7 @@ private slots:
 	void btItemClicked(QTreeWidgetItem *item, int column);
 	void columnResized(int logicalIndex, int oldSize, int newSize);
 private:
+	itf::Configuration *_configuration;
 	msglib::cmd::backtrace::ptr _backtrace;
 };
 

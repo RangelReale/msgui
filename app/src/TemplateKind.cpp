@@ -1,4 +1,5 @@
 #include "msgui/TemplateKind.h"
+#include "msgui/Util.h"
 #include "msgwidget/highlighter/HL_CPP.h"
 
 #include <mredit/Label.h>
@@ -13,8 +14,8 @@
 
 namespace msgui {
 
-TemplateKind::TemplateKind(QWidget *parent) :
-	QTreeWidget(parent)
+TemplateKind::TemplateKind(itf::Configuration *configuration, QWidget *parent) :
+	QTreeWidget(parent), _configuration(configuration)
 {
 	setColumnCount(1);
 	setHeaderLabels(QStringList() << "Name" << "Source"); 
@@ -42,10 +43,12 @@ void TemplateKind::addTemplateKind(const QString &name, const QString &kind, con
 	mredit::Label *msglbl = new mredit::Label(this);
 	msglbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 	new msgwidget::highlighter::HL_CPP(msglbl->document());
-	msglbl->setPlainText(name);
+	msglbl->setPlainText(_configuration->identCPPType(name));
 	setItemWidget(item, 0, msglbl);
 	QFileInfo fi(sourceLocation);
 	item->setText(1, fi.fileName());
+
+	item->setToolTip(0, QString("<pre>%1</pre>").arg(Util::identCPPType(name).toHtmlEscaped()));
 
 	addTopLevelItem(item);
 

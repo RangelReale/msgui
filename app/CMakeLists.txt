@@ -35,7 +35,9 @@ set(SOURCES
     src/TemplateKind.cpp
     src/StartupCode.cpp
     src/TabEditor.cpp
+    src/Util.cpp
 
+    include/msgui/interfaces.h
     include/msgui/MainWindow.h
     include/msgui/Application.h
     include/msgui/LogConfig.h
@@ -52,6 +54,7 @@ set(SOURCES
     include/msgui/TemplateKind.h
     include/msgui/StartupCode.h
     include/msgui/TabEditor.h
+    include/msgui/Util.h
 
     src/resources/resources.qrc
     src/resources/resources.rc

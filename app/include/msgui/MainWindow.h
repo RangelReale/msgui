@@ -1,5 +1,6 @@
 #pragma once
 
+#include "msgui/interfaces.h"
 #include "msgui/LogConfig.h"
 #include "msgui/Project.h"
 #include "msgui/Error.h"
@@ -32,7 +33,7 @@ Q_DECLARE_METATYPE(msglib::cmd::call_graph::ptr)
 
 namespace msgui {
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public itf::Configuration
 {
 	Q_OBJECT
 	LOG4QT_DECLARE_QCLASS_LOGGER
@@ -49,6 +50,9 @@ public:
 	};
 
 	void loadFile(const QString &fileName);
+
+	// itf::Configuration
+	QString identCPPType(const QString &type) override;
 protected:
 	void closeEvent(QCloseEvent *event) override;
 private slots:
@@ -97,6 +101,8 @@ private slots:
 	// menus
 	void menuFileSettings();
 	void menuFileRecent();
+
+	void menuViewIdentCPPTypes();
 
 	void menuProjectSettings();
 
@@ -185,6 +191,8 @@ private:
 	QMenu *_viewWindowMenu;
 
 	// Actions
+	QAction *_viewIdentCPPTypes;
+
 	QAction *_debugStepOnStart;
 	QAction *_debugForwardtraceOnStart;
 	QAction *_debugStartMenu;

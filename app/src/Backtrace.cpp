@@ -1,5 +1,6 @@
 #include "msgui/Backtrace.h"
 #include "msgui/Frame.h"
+#include "msgui/Util.h"
 #include "msgwidget/highlighter/HL_CPP.h"
 
 #include <mredit/Label.h>
@@ -13,8 +14,8 @@
 
 namespace msgui {
 
-Backtrace::Backtrace(QWidget *parent) :
-	QTreeWidget(parent), _backtrace()
+Backtrace::Backtrace(itf::Configuration *configuration, QWidget *parent) :
+	QTreeWidget(parent), _configuration(configuration), _backtrace()
 {
 	setColumnCount(3);
 	setHeaderLabels(QStringList() << "#" << "Name" << "Kind" << "Source");
@@ -45,12 +46,14 @@ void Backtrace::setBacktrace(msglib::cmd::backtrace::ptr backtrace)
 			mredit::Label *namelbl = new mredit::Label(this);
 			namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 			new msgwidget::highlighter::HL_CPP(namelbl->document());
-			namelbl->setPlainText(b->name);
+			namelbl->setPlainText(_configuration->identCPPType(b->name));
 			setItemWidget(item, 1, namelbl);
 
 			item->setText(2, b->kind);
 			QFileInfo fi(b->source_location);
 			item->setText(3, fi.fileName());
+
+			item->setToolTip(1, QString("<pre>%1</pre>").arg(Util::identCPPType(b->name).toHtmlEscaped()));
 
 			scheduleDelayedItemsLayout();
 		}

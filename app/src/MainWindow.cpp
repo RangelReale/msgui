@@ -2,6 +2,7 @@
 #include "msgui/Settings.h"
 #include "msgui/ProjectSettings.h"
 #include "msgui/LogWindow.h"
+#include "msgui/Util.h"
 
 #include <msgwidget/highlighter/HL_CPP.h>
 
@@ -177,6 +178,10 @@ void MainWindow::createActions()
 	// View
 	QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 	_viewWindowMenu = viewMenu->addMenu(tr("&Window"));
+	viewMenu->addSeparator();
+
+	_viewIdentCPPTypes = viewMenu->addAction(tr("&Ident C++ types"), this, &MainWindow::menuViewIdentCPPTypes);
+	_viewIdentCPPTypes->setCheckable(true);
 
 	// Project
 	QMenu *projectMenu = menuBar()->addMenu(tr("&Project"));
@@ -336,7 +341,7 @@ void MainWindow::createDockedWidgets()
 	QDockWidget *dk_callgraph = new QDockWidget("Forward trace", this);
 	dk_callgraph->setObjectName("dock_callgraph");
 
-	_callgraph = new Callgraph(dk_callgraph);
+	_callgraph = new Callgraph(this, dk_callgraph);
 	connect(_callgraph, &Callgraph::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 
 	dk_callgraph->setWidget(_callgraph);
@@ -348,7 +353,7 @@ void MainWindow::createDockedWidgets()
 	QDockWidget *dk_templatekind = new QDockWidget("Template Instantiations", this);
 	dk_templatekind->setObjectName("dock_templatekind");
 
-	_templatekind = new TemplateKind(dk_templatekind);
+	_templatekind = new TemplateKind(this, dk_templatekind);
 	connect(_templatekind, &TemplateKind::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 
 	dk_templatekind->setWidget(_templatekind);
@@ -388,12 +393,12 @@ void MainWindow::createWidgets()
 	connect(_error, &Error::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 
 	// body: frame
-	_frame = new Frame(nullptr, root);
+	_frame = new Frame(nullptr, this, root);
 	_frame->setVisible(false);
 	connect(_frame, &Frame::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 
 	// body: backtrace
-	_backtrace = new Backtrace(root);
+	_backtrace = new Backtrace(this, root);
 	connect(_backtrace, &Backtrace::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
 	
 	// body: editor
@@ -426,6 +431,7 @@ void MainWindow::readSettings()
 {
 	QSettings settings;
 
+	_viewIdentCPPTypes->setChecked(settings.value("view_identcpptypes", true).toBool());
 	_debugStepOnStart->setChecked(settings.value("dbg_steponstart", true).toBool());
 	_debugForwardtraceOnStart->setChecked(settings.value("dbg_forwardtraceonstart", true).toBool());
 
@@ -451,6 +457,7 @@ void MainWindow::writeSettings()
 {
 	QSettings settings;
 
+	settings.setValue("view_identcpptypes", _viewIdentCPPTypes->isChecked());
 	settings.setValue("dbg_steponstart", _debugStepOnStart->isChecked());
 	settings.setValue("dbg_forwardtraceonstart", _debugForwardtraceOnStart->isChecked());
 
@@ -1082,6 +1089,11 @@ void MainWindow::menuFileRecent()
 		loadFile(action->data().toString());
 }
 
+void MainWindow::menuViewIdentCPPTypes()
+{
+
+}
+
 void MainWindow::menuProjectSettings()
 {
 	if (!_project)
@@ -1296,6 +1308,15 @@ void MainWindow::createProcess()
 		connect(_process, &msglib::Process::onCommand, this, &MainWindow::processCommand);
 		connect(_process, &msglib::Process::onPrompt, this, &MainWindow::processPrompt);
 	}
+}
+
+QString MainWindow::identCPPType(const QString &type)
+{
+	if (_viewIdentCPPTypes->isChecked())
+	{
+		return Util::identCPPType(type);
+	}
+	return type;
 }
 
 }
