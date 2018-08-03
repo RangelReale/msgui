@@ -1396,7 +1396,7 @@ void MainWindow::checkRelease(bool showWindow)
 			else
 			{
 				if (_showupdatewindow) {
-					_st_update->setText("This is the latest version.");
+					_st_update->setText("There is no new version of the application.");
 				}
 			}
 		}

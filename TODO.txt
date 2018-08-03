@@ -1,5 +1,4 @@
 * Fullscreen forwardtrace
 * Highligh user-defined words/regex
-* Editor must ident/unident with TAB
 * Copy/paste error and log messages
 * Startup code on main window disable only buttons on debug
