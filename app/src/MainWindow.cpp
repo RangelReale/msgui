@@ -1,6 +1,7 @@
 #include "msgui/MainWindow.h"
 #include "msgui/Settings.h"
 #include "msgui/ProjectSettings.h"
+#include "msgui/ProjectSettingsCodeHighlight.h"
 #include "msgui/LogWindow.h"
 #include "msgui/Util.h"
 #include "msgui/NewReleaseWindow.h"
@@ -196,6 +197,7 @@ void MainWindow::createActions()
 
 	QAction *projectSettingsMenu = projectMenu->addAction(QIcon(":/story-editor.png"), tr("&Settings"), this, &MainWindow::menuProjectSettings);
     projectSettingsMenu->setMenuRole(QAction::NoRole);
+	QAction *projectCodeHighlightMenu = projectMenu->addAction(tr("&Code highlight"), this, &MainWindow::menuProjectCodeHighlight);
 
 	projectSettingsMenu->setShortcut(QKeySequence(Qt::Key_F4));
 
@@ -1119,6 +1121,19 @@ void MainWindow::menuProjectSettings()
 		return;
 
 	ProjectSettings settings(_project, this);
+	if (settings.exec()) {
+		loadProject();
+
+		processRestart();
+	}
+}
+
+void MainWindow::menuProjectCodeHighlight()
+{
+	if (!_project)
+		return;
+
+	ProjectSettingsCodeHighlight settings(_project, this);
 	if (settings.exec()) {
 		loadProject();
 

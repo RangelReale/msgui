@@ -5,8 +5,24 @@
 #include <QObject>
 #include <QStringList>
 #include <QDomDocument>
+#include <QColor>
+#include <QFont>
+
+#include <tl/optional.hpp>
 
 namespace msgui {
+
+class ProjectCodeHighlight
+{
+public:
+	typedef std::shared_ptr<ProjectCodeHighlight> ptr;
+
+	ProjectCodeHighlight() : text(), fgcolor(), bgcolor() {}
+
+	QString text;
+	tl::optional<QColor> fgcolor;
+	tl::optional<QColor> bgcolor;
+};
 
 class Project : public QObject
 {
@@ -21,6 +37,7 @@ public:
 	msglib::CheckStringList &startupCodes();
 	QStringList &includePaths();
 	QStringList &compilerFlags();
+	QList<ProjectCodeHighlight::ptr> codeHighlight();
 
 	// serialization
 	void loadFromXml(const QDomDocument &doc);
@@ -34,6 +51,7 @@ private:
 	msglib::CheckStringList _startupCodes;
 	QStringList _includePaths;
 	QStringList _compilerflags;
+	QList<ProjectCodeHighlight::ptr> _codehighlight;
 };
 
 }

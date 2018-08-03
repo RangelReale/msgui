@@ -37,6 +37,8 @@ set(SOURCES
     src/TabEditor.cpp
     src/Util.cpp
     src/NewReleaseWindow.cpp
+    src/ProjectSettingsCodeHighlight.cpp
+    src/CodeHighlightEditDialog.cpp
 
     include/msgui/interfaces.h
     include/msgui/MainWindow.h
@@ -57,6 +59,8 @@ set(SOURCES
     include/msgui/TabEditor.h
     include/msgui/Util.h
     include/msgui/NewReleaseWindow.h
+    include/msgui/ProjectSettingsCodeHighlight.h
+    include/msgui/CodeHighlightEditDialog.h
 
     src/resources/resources.qrc
     src/resources/resources.rc

@@ -113,6 +113,7 @@ private slots:
 	void menuViewIdentCPPTypes();
 
 	void menuProjectSettings();
+	void menuProjectCodeHighlight();
 
 	void menuInformationEnvironment();
 	void menuInformationEnvironmentReload();

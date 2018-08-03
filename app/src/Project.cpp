@@ -7,7 +7,7 @@
 namespace msgui {
 
 Project::Project(QObject *parent) : 
-	QObject(parent), _modified(false), _startupCodes(),  _includePaths(), _compilerflags()
+	QObject(parent), _modified(false), _startupCodes(),  _includePaths(), _compilerflags(), _codehighlight()
 {
 	setDefaults();
 }
@@ -42,11 +42,17 @@ QStringList &Project::compilerFlags()
 	return _compilerflags;
 }
 
+QList<ProjectCodeHighlight::ptr> Project::codeHighlight()
+{
+	return _codehighlight;
+}
+
 void Project::clear()
 {
 	_startupCodes.clear();
 	_includePaths.clear();
 	_compilerflags.clear();
+	_codehighlight.clear();
 }
 
 void Project::setDefaults()
