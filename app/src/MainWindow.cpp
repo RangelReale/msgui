@@ -30,13 +30,14 @@
 #include <QDockWidget>
 #include <QSplitter>
 #include <QCryptographicHash>
+#include <QVersionNumber>
 
 #include "version.h"
 
 namespace msgui {
 
 MainWindow::MainWindow(const QString &filename) : 
-	QMainWindow(), _project(nullptr), _process(nullptr), _cmdmode(cmdmode_t::inactive), _cmdparser()
+	QMainWindow(), _project(nullptr), _process(nullptr), _cmdmode(cmdmode_t::inactive), _cmdparser(), _showupdatewindow(false)
 {
 	_logconfig = new LogConfig(this);
 
@@ -275,6 +276,8 @@ void MainWindow::createActions()
 	QToolBar *helpToolBar = addToolBar(tr("Help"));
 	helpToolBar->setObjectName("help_toolbar");
 
+	QAction *helpCheckUpdatesMenu = helpMenu->addAction(tr("&Check for updates..."), this, &MainWindow::menuHelpCheckUpdates);
+	helpMenu->addSeparator();
 	QAction *helpLogMenu = helpMenu->addAction(QIcon(":/view-calendar-list.png"), tr("&Log"), this, &MainWindow::menuHelpLog);
 	helpMenu->addSeparator();
 	QAction *helpAboutMenu = helpMenu->addAction(QIcon(":/help-about.png"), tr("&About"), this, &MainWindow::menuHelpAbout);
@@ -290,6 +293,7 @@ void MainWindow::createStatusBar()
 	_st_cmdmode = new QLabel("Command mode", statusBar());
 	_st_process = new QLabel("Process", statusBar());
 	_st_filename = new QLabel("", statusBar());
+	_st_update = new QLabel("", statusBar());
 
 	_st_cmdmode->setMinimumWidth(150);
 	_st_process->setMinimumWidth(120);
@@ -298,10 +302,15 @@ void MainWindow::createStatusBar()
 	_st_cmdmode->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	_st_process->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	_st_filename->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	_st_update->setTextFormat(Qt::RichText);
+	_st_update->setTextInteractionFlags(Qt::TextBrowserInteraction);
+
+	connect(_st_update, &QLabel::linkActivated, this, &MainWindow::menuStUpdateClicked);
 
 	statusBar()->addWidget(_st_cmdmode);
 	statusBar()->addWidget(_st_process);
 	statusBar()->addWidget(_st_filename);
+	statusBar()->addPermanentWidget(_st_update);
 }
 
 void MainWindow::createDockedWidgets()
@@ -447,6 +456,11 @@ void MainWindow::readSettings()
 	}
 	else {
 		restoreGeometry(geometry);
+		// https://stackoverflow.com/a/44006515/784175
+		if (isMaximized())
+		{
+			setGeometry(QApplication::desktop()->availableGeometry(this));
+		}
 	}
 	const QByteArray windowState = settings.value("windowState", QByteArray()).toByteArray();
 	if (!windowState.isEmpty()) {
@@ -1266,11 +1280,22 @@ void MainWindow::menuHelpLog()
 	}
 }
 
+void MainWindow::menuHelpCheckUpdates()
+{
+	_showupdatewindow = true;
+	checkForUpdates();
+}
+
 void MainWindow::menuHelpAbout()
 {
 	QMessageBox::about(this, 
 		QString("MSGUI %1 - Metashell GUI").arg(QString::fromLocal8Bit(VER_FILEVERSION_STR)),
 		"Copyright (c) 2018 Rangel Reale (rangelreale@gmail.com)");
+}
+
+void MainWindow::menuStUpdateClicked(const QString &link)
+{
+	checkRelease(true);
 }
 
 void MainWindow::createProcess()
@@ -1340,26 +1365,47 @@ void MainWindow::ghrelError(const QString &message)
 	logger()->logger("updatecheck")->error(message);
 }
 
-void MainWindow::ghrelInfo(msgwidget::GithubReleaseInfo info)
+void MainWindow::checkRelease(bool showWindow)
 {
-	QRegularExpression vre("^v(\\d+)\\.(\\d+)\\.(\\*|\\d+)$");
-	QRegularExpressionMatch mvre = vre.match(info.tag_name);
-	if (mvre.hasMatch()) {
-		QString newVersion(QString("%1.%2.%3.0").arg(mvre.captured(1)).arg(mvre.captured(2)).arg(mvre.captured(3)));
-		QString curVersion(VER_FILEVERSION_STR);
+	if (_ghinfo)
+	{
+		QSettings settings;
+		QString ignoreupdate = settings.value("ignoreupdate").toString();
+		if (!_showupdatewindow && ignoreupdate == _ghinfo->tag_name) {
+			return;
+		}
 
-		logger()->logger("updatecheck")->info(QString("Version: latest [%1] current [%2]").
-			arg(newVersion).arg(curVersion));
+		QRegularExpression vre("^v(\\d+)\\.(\\d+)\\.(\\*|\\d+)$");
+		QRegularExpressionMatch mvre = vre.match(_ghinfo->tag_name);
+		if (mvre.hasMatch()) {
+			QVersionNumber newVersion(QVersionNumber::fromString(QString("%1.%2.%3.0").arg(mvre.captured(1)).arg(mvre.captured(2)).arg(mvre.captured(3))));
+			QVersionNumber curVersion(QVersionNumber::fromString(VER_FILEVERSION_STR));
 
-		if (newVersion != curVersion) {
-			if (!NewReleaseWindow::instance()) {
-				new NewReleaseWindow;
+			//logger()->logger("updatecheck")->info(QString("Version: latest [%1] current [%2]").
+				//arg(newVersion.toString()).arg(curVersion.toString()));
+
+			//if (QVersionNumber::compare(newVersion, curVersion) > 0) {
+			if (true) {
+				if (showWindow  || _showupdatewindow) {
+					if (!NewReleaseWindow::instance()) {
+						new NewReleaseWindow;
+					}
+					NewReleaseWindow::instance()->setInfo(*_ghinfo);
+					NewReleaseWindow::instance()->show();
+				}
+				else {
+					_st_update->setText(QString("<a style=\"background-color: yellow; padding: 2px 4px; margin: 2px 4px;\" href=\"update\">New version available %1</a>").arg(newVersion.toString()));
+				}
 			}
-			NewReleaseWindow::instance()->setInfo(info);
-			NewReleaseWindow::instance()->show();
 		}
 	}
+}
 
+
+void MainWindow::ghrelInfo(msgwidget::GithubReleaseInfo info)
+{
+	_ghinfo.reset(new msgwidget::GithubReleaseInfo(info));
+	checkRelease(false);
 }
 
 }

@@ -18,13 +18,16 @@ public:
 	static NewReleaseWindow* instance();
 
 	void setInfo(msgwidget::GithubReleaseInfo info);
+public slots:
+	void onDownload();
+	void onIgnore();
+	void onLater();
 private:
 	static NewReleaseWindow* _instance;
 
 	QLabel *_name;
 	QLabel *_version;
 	QPlainTextEdit *_body;
-	QLabel *_link;
 
 	msgwidget::GithubReleaseInfo _info;
 };

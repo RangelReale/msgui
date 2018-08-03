@@ -37,13 +37,14 @@ public:
 
 	void load(const QString &user, const QString &repo)
 	{
+		if (reply) {
+			return;
+		}
+
 		QUrl url(QString("https://api.github.com/repos/%1/%2/releases/latest").arg(user).arg(repo));
 		reply = qnam.get(QNetworkRequest(url));
 
-		//QSslConfiguration conf = reply->sslConfiguration();
-		//conf.setPeerVerifyMode(QSslSocket::VerifyNone);
-		//reply->setSslConfiguration(conf);
-
+		connect(reply, &QNetworkReply::finished, this, &GithubReleasePrivate::httpFinished);
 		connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &GithubReleasePrivate::httpError);
 		connect(reply, &QIODevice::readyRead, this, &GithubReleasePrivate::httpReadyRead);
 	}
@@ -58,6 +59,16 @@ private slots:
 	{
 		Q_Q(GithubRelease);
 		emit q->onError("Error: SSL error");
+	}
+
+	void httpFinished()
+	{
+		Q_Q(GithubRelease);
+		if (reply)
+		{
+			reply->deleteLater();
+			reply = nullptr;
+		}
 	}
 
 	void httpError(QNetworkReply::NetworkError code)

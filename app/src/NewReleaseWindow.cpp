@@ -2,6 +2,9 @@
 
 #include <QApplication>
 #include <QBoxLayout>
+#include <QPushButton>
+#include <QDesktopServices>
+#include <QSettings>
 
 namespace msgui {
 
@@ -23,21 +26,29 @@ NewReleaseWindow::NewReleaseWindow() : QMainWindow()
 	QHBoxLayout *namelayout = new QHBoxLayout;
 	layout->addLayout(namelayout);
 
-	_name = new QLabel(this);
-	_version = new QLabel(this);
+	_name = new QLabel(root);
+	_version = new QLabel(root);
 
 	namelayout->addWidget(_name, 5);
 	namelayout->addWidget(_version, 1, Qt::AlignRight);
 
-	_body = new QPlainTextEdit(this);
+	_body = new QPlainTextEdit(root);
 	_body->setReadOnly(true);
 	layout->addWidget(_body);
 
-	_link = new QLabel(this);
-	_link->setTextFormat(Qt::RichText);
-	_link->setTextInteractionFlags(Qt::TextBrowserInteraction);
-	_link->setOpenExternalLinks(true);
-	layout->addWidget(_link);
+	QHBoxLayout *btnlayout = new QHBoxLayout;
+	layout->addLayout(btnlayout);
+	QPushButton *btDownload = new QPushButton("&Download", root);
+	QPushButton *btIgnore = new QPushButton("&Ignore", root);
+	QPushButton *btLater = new QPushButton("&Later", root);
+
+	btnlayout->addWidget(btDownload);
+	btnlayout->addWidget(btIgnore);
+	btnlayout->addWidget(btLater);
+
+	connect(btDownload, &QPushButton::clicked, this, &NewReleaseWindow::onDownload);
+	connect(btIgnore, &QPushButton::clicked, this, &NewReleaseWindow::onIgnore);
+	connect(btLater, &QPushButton::clicked, this, &NewReleaseWindow::onLater);
 }
 
 NewReleaseWindow::~NewReleaseWindow()
@@ -57,7 +68,25 @@ void NewReleaseWindow::setInfo(msgwidget::GithubReleaseInfo info)
 	_name->setText(info.name);
 	_version->setText(info.tag_name);
 	_body->setPlainText(info.body);
-	_link->setText(QString("<a href=\"%1\">Download update</a>").arg(info.html_url));
 }
+
+void NewReleaseWindow::onDownload()
+{
+	QDesktopServices::openUrl(_info.html_url);
+	close();
+}
+
+void NewReleaseWindow::onIgnore()
+{
+	QSettings settings;
+	settings.setValue("ignoreupdate", _info.tag_name);
+	close();
+}
+
+void NewReleaseWindow::onLater()
+{
+	close();
+}
+
 
 }

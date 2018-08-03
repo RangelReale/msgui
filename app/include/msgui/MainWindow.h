@@ -65,6 +65,7 @@ private slots:
 	void documentWasModified();
 
 	void checkForUpdates();
+	void checkRelease(bool showWindow);
 	void ghrelLog(const QString &message);
 	void ghrelError(const QString &message);
 	void ghrelInfo(msgwidget::GithubReleaseInfo info);
@@ -134,7 +135,10 @@ private slots:
 	void menuDebugForwardtrace();
 
 	void menuHelpLog();
+	void menuHelpCheckUpdates();
 	void menuHelpAbout();
+
+	void menuStUpdateClicked(const QString &link);
 
 	void updateRecentFileActions();
 private:
@@ -186,6 +190,7 @@ private:
 	QLabel *_st_cmdmode;
 	QLabel *_st_process;
 	QLabel *_st_filename;
+	QLabel *_st_update;
 
 	Error *_error;
 	Frame *_frame;
@@ -237,6 +242,8 @@ private:
 	msglib::cmd::parser _cmdparser;
 
 	msgwidget::GithubRelease *_ghrel;
+	std::shared_ptr<msgwidget::GithubReleaseInfo> _ghinfo;
+	bool _showupdatewindow;
 };
 
 }
