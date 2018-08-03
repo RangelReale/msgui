@@ -8,39 +8,31 @@
 
 namespace msgui {
 
-NewReleaseWindow *NewReleaseWindow::_instance = nullptr;
-
-NewReleaseWindow::NewReleaseWindow() : QMainWindow()
+NewReleaseWindow::NewReleaseWindow(QWidget *parent) : QDialog(parent, Qt::MSWindowsFixedSizeDialogHint)
 {
 	setWindowTitle("New Release");
-	setAttribute(Qt::WA_DeleteOnClose);
-
-	_instance = this;
-
-	QWidget *root = new QWidget(this);
-	setCentralWidget(root);
 
 	QVBoxLayout *layout = new QVBoxLayout;
-	root->setLayout(layout);
+	setLayout(layout);
 
 	QHBoxLayout *namelayout = new QHBoxLayout;
 	layout->addLayout(namelayout);
 
-	_name = new QLabel(root);
-	_version = new QLabel(root);
+	_name = new QLabel(this);
+	_version = new QLabel(this);
 
 	namelayout->addWidget(_name, 5);
 	namelayout->addWidget(_version, 1, Qt::AlignRight);
 
-	_body = new QPlainTextEdit(root);
+	_body = new QPlainTextEdit(this);
 	_body->setReadOnly(true);
 	layout->addWidget(_body);
 
 	QHBoxLayout *btnlayout = new QHBoxLayout;
 	layout->addLayout(btnlayout);
-	QPushButton *btDownload = new QPushButton("&Download", root);
-	QPushButton *btIgnore = new QPushButton("&Ignore", root);
-	QPushButton *btLater = new QPushButton("&Later", root);
+	QPushButton *btDownload = new QPushButton("&Download", this);
+	QPushButton *btIgnore = new QPushButton("&Ignore", this);
+	QPushButton *btLater = new QPushButton("&Later", this);
 
 	btnlayout->addWidget(btDownload);
 	btnlayout->addWidget(btIgnore);
@@ -53,12 +45,7 @@ NewReleaseWindow::NewReleaseWindow() : QMainWindow()
 
 NewReleaseWindow::~NewReleaseWindow()
 {
-	_instance = nullptr;
-}
-
-NewReleaseWindow* NewReleaseWindow::instance()
-{
-	return _instance;
+	
 }
 
 void NewReleaseWindow::setInfo(msgwidget::GithubReleaseInfo info)

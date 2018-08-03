@@ -2,20 +2,18 @@
 
 #include <msgwidget/GithubRelease.h>
 
-#include <QMainWindow>
+#include <QDialog>
 #include <QLabel>
 #include <QPlainTextEdit>
 
 namespace msgui {
 
-class NewReleaseWindow : public QMainWindow
+class NewReleaseWindow : public QDialog
 {
 	Q_OBJECT
 public:
-	NewReleaseWindow();
+	NewReleaseWindow(QWidget *parent);
 	~NewReleaseWindow();
-
-	static NewReleaseWindow* instance();
 
 	void setInfo(msgwidget::GithubReleaseInfo info);
 public slots:
@@ -23,8 +21,6 @@ public slots:
 	void onIgnore();
 	void onLater();
 private:
-	static NewReleaseWindow* _instance;
-
 	QLabel *_name;
 	QLabel *_version;
 	QPlainTextEdit *_body;

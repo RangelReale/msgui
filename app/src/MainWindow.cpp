@@ -97,7 +97,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	writeSettings();
 
 	if (LogWindow::instance()) LogWindow::instance()->close();
-	if (NewReleaseWindow::instance()) NewReleaseWindow::instance()->close();
 }
 
 void MainWindow::newFile()
@@ -1384,17 +1383,20 @@ void MainWindow::checkRelease(bool showWindow)
 			//logger()->logger("updatecheck")->info(QString("Version: latest [%1] current [%2]").
 				//arg(newVersion.toString()).arg(curVersion.toString()));
 
-			//if (QVersionNumber::compare(newVersion, curVersion) > 0) {
-			if (true) {
+			if (QVersionNumber::compare(newVersion, curVersion) > 0) {
 				if (showWindow  || _showupdatewindow) {
-					if (!NewReleaseWindow::instance()) {
-						new NewReleaseWindow;
-					}
-					NewReleaseWindow::instance()->setInfo(*_ghinfo);
-					NewReleaseWindow::instance()->show();
+					NewReleaseWindow d(this);
+					d.setInfo(*_ghinfo);
+					d.exec();
 				}
 				else {
 					_st_update->setText(QString("<a style=\"background-color: yellow; padding: 2px 4px; margin: 2px 4px;\" href=\"update\">New version available %1</a>").arg(newVersion.toString()));
+				}
+			}
+			else
+			{
+				if (_showupdatewindow) {
+					_st_update->setText("This is the latest version.");
 				}
 			}
 		}
