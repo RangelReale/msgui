@@ -1,6 +1,5 @@
 #include "msgui/CodeDialog.h"
 
-#include <msgwidget/highlighter/HL_CPP.h>
 #include <mredit/margin/MarginStacker.h>
 
 #include <QBoxLayout>
@@ -9,7 +8,7 @@
 
 namespace msgui {
 
-CodeDialog::CodeDialog(const QString &code, QWidget *parent) : 
+CodeDialog::CodeDialog(itf::Configuration *configuration, const QString &code, QWidget *parent) :
 	QDialog(parent)
 {
 	setWindowTitle("Settings");
@@ -23,7 +22,7 @@ CodeDialog::CodeDialog(const QString &code, QWidget *parent) :
 	_editor->marginStacker()->setVisible(mredit::Global::Margin::SpaceMargin, true);
 
 	_editor->setText(code);
-	new msgwidget::highlighter::HL_CPP(_editor->document());
+	_configuration->createCPPHighligher(_editor->document());
 	layout->addWidget(_editor);
 
 	// buttons

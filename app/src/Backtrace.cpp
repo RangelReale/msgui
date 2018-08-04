@@ -1,7 +1,6 @@
 #include "msgui/Backtrace.h"
 #include "msgui/Frame.h"
 #include "msgui/Util.h"
-#include "msgwidget/highlighter/HL_CPP.h"
 
 #include <mredit/Label.h>
 
@@ -45,7 +44,7 @@ void Backtrace::setBacktrace(msglib::cmd::backtrace::ptr backtrace)
 
 			mredit::Label *namelbl = new mredit::Label(this);
 			namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-			new msgwidget::highlighter::HL_CPP(namelbl->document());
+			_configuration->createCPPHighligher(namelbl->document());
 			namelbl->setPlainText(_configuration->identCPPType(b->name));
 			setItemWidget(item, 1, namelbl);
 
@@ -72,6 +71,11 @@ void Backtrace::btItemClicked(QTreeWidgetItem *item, int column)
 void Backtrace::columnResized(int logicalIndex, int oldSize, int newSize)
 {
 	scheduleDelayedItemsLayout();
+}
+
+void Backtrace::onProjectChanged()
+{
+	setBacktrace(_backtrace);
 }
 
 }

@@ -17,11 +17,15 @@ class ProjectCodeHighlight
 public:
 	typedef std::shared_ptr<ProjectCodeHighlight> ptr;
 
-	ProjectCodeHighlight() : text(), fgcolor(), bgcolor() {}
+	ProjectCodeHighlight() : enabled(true), regexp(), fgcolor(), bgcolor(), bold(false) {}
+	ProjectCodeHighlight(bool checked, const QString &regexp, tl::optional<QColor> fgcolor, tl::optional<QColor> bgcolor, bool bold) : 
+		enabled(checked), regexp(regexp), fgcolor(fgcolor), bgcolor(bgcolor), bold(bold) {}
 
-	QString text;
+	bool enabled;
+	QString regexp;
 	tl::optional<QColor> fgcolor;
 	tl::optional<QColor> bgcolor;
+	bool bold;
 };
 
 class Project : public QObject
@@ -37,11 +41,13 @@ public:
 	msglib::CheckStringList &startupCodes();
 	QStringList &includePaths();
 	QStringList &compilerFlags();
-	QList<ProjectCodeHighlight::ptr> codeHighlight();
+	QList<ProjectCodeHighlight::ptr> &codeHighlight();
 
 	// serialization
 	void loadFromXml(const QDomDocument &doc);
 	void saveToXml(QDomDocument &doc);
+signals:
+	void onProjectChanged();
 private:
 	void clear();
 	void setDefaults();

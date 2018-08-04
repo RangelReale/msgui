@@ -1,6 +1,5 @@
 #include "msgui/CodeHighlightEditDialog.h"
 
-#include <msgwidget/highlighter/HL_CPP.h>
 #include <mredit/margin/MarginStacker.h>
 
 #include <QBoxLayout>
@@ -9,12 +8,14 @@
 #include <QColorDialog>
 #include <QStyle>
 #include <QApplication>
+#include <QMessageBox>
+#include <QFontDatabase>
 #include <QDesktopWidget>
 
 namespace msgui {
 
-CodeHighlightEditDialog::CodeHighlightEditDialog(tl::optional<QColor> fgcolor, tl::optional<QColor> bgcolor, QWidget *parent) :
-	QDialog(parent), _fgcolor(fgcolor), _bgcolor(bgcolor)
+CodeHighlightEditDialog::CodeHighlightEditDialog(const QString &regexp, tl::optional<QColor> fgcolor, tl::optional<QColor> bgcolor, bool bold, QWidget *parent) :
+	QDialog(parent, Qt::MSWindowsFixedSizeDialogHint), _regexp(regexp), _fgcolor(fgcolor), _bgcolor(bgcolor), _bold(bold)
 {
 	setWindowTitle("Code highlight");
 
@@ -24,8 +25,9 @@ CodeHighlightEditDialog::CodeHighlightEditDialog(tl::optional<QColor> fgcolor, t
 	QFormLayout *form = new QFormLayout;
 	layout->addLayout(form);
 
-	_text = new QLineEdit(this);
-	form->addRow(tr("Text"), _text);
+	_regexpedit = new QLineEdit(this);
+	_regexpedit->setText(regexp);
+	form->addRow(tr("Text/Regexp"), _regexpedit);
 
 	_example = new QLabel(this);
 	_example->setAutoFillBackground(true);
@@ -46,6 +48,12 @@ CodeHighlightEditDialog::CodeHighlightEditDialog(tl::optional<QColor> fgcolor, t
 
 	form->addRow(tr("Foreground color"), fglayout);
 
+	// bold
+	_fBold = new QCheckBox(this);
+	_fBold->setChecked(bold);
+	connect(_fBold, &QCheckBox::clicked, this, &CodeHighlightEditDialog::boldClicked);
+	form->addRow(tr("Bold"), _fBold);
+
 	// bgcolor
 	QHBoxLayout *bglayout = new QHBoxLayout;
 
@@ -53,7 +61,7 @@ CodeHighlightEditDialog::CodeHighlightEditDialog(tl::optional<QColor> fgcolor, t
 	bglayout->addWidget(_bgSelect);
 	connect(_bgSelect, &QPushButton::clicked, this, &CodeHighlightEditDialog::bgColorClicked);
 	_bgDefault = new QCheckBox(tr("Default"), this);
-	_bgDefault->setChecked(!_fgcolor);
+	_bgDefault->setChecked(!_bgcolor);
 	bglayout->addWidget(_bgDefault);
 	connect(_bgDefault, &QCheckBox::clicked, this, &CodeHighlightEditDialog::bgColorDefaultClicked);
 
@@ -77,6 +85,12 @@ CodeHighlightEditDialog::CodeHighlightEditDialog(tl::optional<QColor> fgcolor, t
 	//resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
 }
 
+CodeHighlightEditDialog::CodeHighlightEditDialog(QWidget *parent) :
+	CodeHighlightEditDialog("", {}, {}, false, parent)
+{
+
+}
+
 void CodeHighlightEditDialog::fgColorClicked()
 {
 	QColor c(QApplication::palette().color(QPalette::WindowText));
@@ -93,7 +107,7 @@ void CodeHighlightEditDialog::fgColorClicked()
 void CodeHighlightEditDialog::fgColorDefaultClicked()
 {
 	if (_fgDefault->isChecked())
-		_fgcolor = nullptr;
+		_fgcolor.reset();
 	exampleChanged();
 
 	updateSelect();
@@ -115,10 +129,15 @@ void CodeHighlightEditDialog::bgColorClicked()
 void CodeHighlightEditDialog::bgColorDefaultClicked()
 {
 	if (_bgDefault->isChecked())
-		_fgcolor = nullptr;
+		_bgcolor.reset();
 	exampleChanged();
 
 	updateSelect();
+}
+
+void CodeHighlightEditDialog::boldClicked()
+{
+	exampleChanged();
 }
 
 void CodeHighlightEditDialog::updateSelect()
@@ -129,18 +148,29 @@ void CodeHighlightEditDialog::updateSelect()
 
 void CodeHighlightEditDialog::exampleChanged()
 {
-	QPalette pal(_example->style()->standardPalette());
+	QPalette pal(style()->standardPalette());
 	if (_bgcolor)
 		pal.setColor(_example->backgroundRole(), _bgcolor.value());
 	if (_fgcolor)
 		pal.setColor(_example->foregroundRole(), _fgcolor.value());
 	_example->setPalette(pal);
+	QFont f(_example->font());
+	f.setBold(_fBold->isChecked());
+	_example->setFont(f);
 
 	_example->update();
 }
 
 void CodeHighlightEditDialog::onBtnOk()
 {
+	if (_regexpedit->text().trimmed().isEmpty()) {
+		QMessageBox::warning(this, tr("Code highlight"), "Text/regexp is required", QMessageBox::Ok);
+		return;
+	}
+
+	_regexp = _regexpedit->text();
+	_bold = _fBold->isChecked();
+
 	accept();
 }
 

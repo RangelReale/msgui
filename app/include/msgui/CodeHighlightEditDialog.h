@@ -16,15 +16,19 @@ class CodeHighlightEditDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	CodeHighlightEditDialog(tl::optional<QColor> fgcolor, tl::optional<QColor> bgcolor, QWidget *parent);
+	CodeHighlightEditDialog(const QString &regexp, tl::optional<QColor> fgcolor, tl::optional<QColor> bgcolor, bool bold, QWidget *parent);
+	CodeHighlightEditDialog(QWidget *parent);
 
-	tl::optional<QColor> fgcolor() { return _fgcolor; }
-	tl::optional<QColor> bgcolor() { return _bgcolor; }
+	const QString &regexp() const { return _regexp; }
+	tl::optional<QColor> fgcolor() const { return _fgcolor; }
+	tl::optional<QColor> bgcolor() const { return _bgcolor; }
+	bool bold() const { return _bold; }
 private slots:
 	void fgColorClicked();
 	void fgColorDefaultClicked();
 	void bgColorClicked();
 	void bgColorDefaultClicked();
+	void boldClicked();
 
 	void onBtnOk();
 	void onBtnCancel();
@@ -32,12 +36,16 @@ private:
 	void updateSelect();
 	void exampleChanged();
 
-	QLineEdit * _text;
+	QLineEdit * _regexpedit;
 	QLabel *_example;
 	QPushButton *_fgSelect;
 	QCheckBox *_fgDefault;
 	QPushButton *_bgSelect;
 	QCheckBox *_bgDefault;
+	QCheckBox *_fBold;
+
+	QString _regexp;
+	bool _bold;
 	tl::optional<QColor> _fgcolor;
 	tl::optional<QColor> _bgcolor;
 };

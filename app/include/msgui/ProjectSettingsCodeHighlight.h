@@ -2,10 +2,13 @@
 
 #include "msgui/Project.h"
 #include "msgwidget/UpDownListWidget.h"
+#include "msgui/CodeHighlightEditDialog.h"
 
 #include <QDialog>
 #include <QLineEdit>
 #include <QTabWidget>
+#include <QMap>
+#include <QVariant>
 
 namespace msgui {
 
@@ -21,6 +24,8 @@ private slots:
 	void onBtnOk();
 	void onBtnCancel();
 private:
+	typedef QMap<QString, QVariant> chrole_t;
+
 	void readSettings();
 	void writeSettings();
 

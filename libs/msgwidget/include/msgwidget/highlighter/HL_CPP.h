@@ -17,15 +17,15 @@ class HL_CPP : public QSyntaxHighlighter
 public:
 	HL_CPP(QTextDocument *parent = 0);
 
+	struct HighlightingRule
+	{
+		QRegularExpression pattern;
+		QTextCharFormat format;
+	};
+	QVector<HighlightingRule> customHighlightingRules;
 protected:
     void highlightBlock(const QString &text) override;
-
 private:
-    struct HighlightingRule
-    {
-        QRegularExpression pattern;
-        QTextCharFormat format;
-    };
     QVector<HighlightingRule> highlightingRules;
 
     QRegularExpression commentStartExpression;

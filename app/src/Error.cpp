@@ -1,5 +1,4 @@
 #include "msgui/Error.h"
-#include "msgwidget/highlighter/HL_CPP.h"
 
 #include <QBoxLayout>
 #include <QFontDatabase>
@@ -9,8 +8,8 @@
 
 namespace msgui {
 
-Error::Error(QWidget *parent) :
-	QFrame(parent), _message()
+Error::Error(itf::Configuration *configuration, QWidget *parent) :
+	QFrame(parent), _configuration(configuration), _message()
 {
 	setFrameShape(QFrame::Panel);
 	setFrameShadow(QFrame::Sunken);
@@ -30,7 +29,7 @@ Error::Error(QWidget *parent) :
 	_error = new mredit::Editor(this);
 	_error->setReadOnly(true);
 	_error->setLabelLayout(true);
-	new msgwidget::highlighter::HL_CPP(_error->document());
+	_configuration->createCPPHighligher(_error->document());
 
 	layout->addWidget(_icon, 1, Qt::AlignHCenter | Qt::AlignTop);
 	layout->addWidget(_error, 10);
@@ -54,6 +53,7 @@ void Error::setMessage(const QString &message)
 		_error->setPlainText("");
 		setVisible(false);
 	}
+	_message = message;
 }
 
 void Error::mousePressEvent(QMouseEvent *event)
@@ -62,6 +62,11 @@ void Error::mousePressEvent(QMouseEvent *event)
 	{
 		//emit showFileAndLine(c->source_location);
 	}
+}
+
+void Error::onProjectChanged()
+{
+	setMessage(_message);
 }
 
 }

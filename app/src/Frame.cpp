@@ -1,6 +1,5 @@
 #include "msgui/Frame.h"
 #include "msgui/Util.h"
-#include "msgwidget/highlighter/HL_CPP.h"
 
 #include <QBoxLayout>
 #include <QLabel>
@@ -25,7 +24,7 @@ Frame::Frame(msglib::cmd::base::ptr frame, itf::Configuration *configuration, QW
 
 	_name = new mredit::Label(this);
 	_name->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-	new msgwidget::highlighter::HL_CPP(_name->document());
+	_configuration->createCPPHighligher(_name->document());
 	_name->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
 
 	layout->addWidget(_kind, 1);
@@ -92,6 +91,11 @@ void Frame::mousePressEvent(QMouseEvent *event)
 			}
 		}
 	}
+}
+
+void Frame::onProjectChanged()
+{
+	setFrame(_frame);
 }
 
 }

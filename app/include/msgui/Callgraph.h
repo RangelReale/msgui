@@ -19,6 +19,8 @@ public:
 	void setCallgraph(msglib::cmd::call_graph::ptr callgraph);
 signals:
 	void showFileAndLine(const QString &fileAndFile);
+public slots:
+	void onProjectChanged();
 private slots:
 	void btItemClicked(QTreeWidgetItem *item, int column);
 	void columnResized(int logicalIndex, int oldSize, int newSize);

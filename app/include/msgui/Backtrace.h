@@ -18,6 +18,8 @@ public:
 	void setBacktrace(msglib::cmd::backtrace::ptr backtrace);
 signals:
 	void showFileAndLine(const QString &fileAndFile);
+public slots:
+	void onProjectChanged();
 private slots:
 	void btItemClicked(QTreeWidgetItem *item, int column);
 	void columnResized(int logicalIndex, int oldSize, int newSize);

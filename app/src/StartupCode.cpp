@@ -13,8 +13,8 @@
 
 namespace msgui {
 
-StartupCode::StartupCode(QWidget *parent) :
-	msgwidget::UpDownListWidget(parent)
+StartupCode::StartupCode(itf::Configuration *configuration, QWidget *parent) :
+	msgwidget::UpDownListWidget(parent), _configuration(configuration)
 {
 	showAddButton();
 	showEditButton();
@@ -59,7 +59,7 @@ void StartupCode::writeSettings()
 
 void StartupCode::btnStartupCodeAddClicked()
 {
-	CodeDialog d("", this);
+	CodeDialog d(_configuration, "", this);
 	if (d.exec()) {
 		QListWidgetItem *li = new QListWidgetItem(firstLine(d.text()), listWidget());
 		li->setData(FILEDATA_ROLE, d.text());
@@ -75,7 +75,7 @@ void StartupCode::btnStartupCodeEditClicked()
 {
 	if (listWidget()->currentRow() == -1) return;
 
-	CodeDialog d(listWidget()->item(listWidget()->currentRow())->data(FILEDATA_ROLE).toString(), this);
+	CodeDialog d(_configuration, listWidget()->item(listWidget()->currentRow())->data(FILEDATA_ROLE).toString(), this);
 	if (d.exec()) {
 		listWidget()->item(listWidget()->currentRow())->setText(firstLine(d.text()));
 		listWidget()->item(listWidget()->currentRow())->setData(FILEDATA_ROLE, d.text());

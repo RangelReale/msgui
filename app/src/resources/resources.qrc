@@ -28,5 +28,6 @@
     <file>list-add.png</file>
     <file>list-remove.png</file>
     <file>mail-mark-task.png</file>
+    <file>format-text-color.png</file>
 </qresource>
 </RCC>

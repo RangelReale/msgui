@@ -16,6 +16,8 @@ public:
 signals:
 	void showFileAndLine(const QString &fileAndFile);
 public slots:
+	void onProjectChanged();
+public slots:
 	void btItemClicked(QTreeWidgetItem *item, int column);
 	void columnResized(int logicalIndex, int oldSize, int newSize);
 private:

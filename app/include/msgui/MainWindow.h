@@ -55,9 +55,14 @@ public:
 
 	// itf::Configuration
 	QString identCPPType(const QString &type) override;
+	msgwidget::highlighter::HL_CPP *createCPPHighligher(QTextDocument *parent);
+signals:
+	void signalProjectChanged();
 protected:
 	void closeEvent(QCloseEvent *event) override;
 private slots:
+	void onProjectChanged();
+
 	void newFile();
 	void open();
 	bool save();

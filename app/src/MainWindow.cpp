@@ -100,6 +100,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	if (LogWindow::instance()) LogWindow::instance()->close();
 }
 
+void MainWindow::onProjectChanged()
+{
+	emit signalProjectChanged();
+}
+
 void MainWindow::newFile()
 {
 	if (maybeSave()) 
@@ -110,6 +115,9 @@ void MainWindow::newFile()
 		setCurrentFile(QString());
 
 		loadProject();
+
+		onProjectChanged();
+		connect(_project, &Project::onProjectChanged, this, &MainWindow::onProjectChanged);
 	}
 }
 
@@ -197,11 +205,12 @@ void MainWindow::createActions()
 
 	QAction *projectSettingsMenu = projectMenu->addAction(QIcon(":/story-editor.png"), tr("&Settings"), this, &MainWindow::menuProjectSettings);
     projectSettingsMenu->setMenuRole(QAction::NoRole);
-	QAction *projectCodeHighlightMenu = projectMenu->addAction(tr("&Code highlight"), this, &MainWindow::menuProjectCodeHighlight);
+	QAction *projectCodeHighlightMenu = projectMenu->addAction(QIcon(":/format-text-color.png"), tr("&Code highlight"), this, &MainWindow::menuProjectCodeHighlight);
 
 	projectSettingsMenu->setShortcut(QKeySequence(Qt::Key_F4));
 
 	projectToolBar->addAction(projectSettingsMenu);
+	projectToolBar->addAction(projectCodeHighlightMenu);
 
 	// Debug
 	QMenu *debugMenu = menuBar()->addMenu(tr("&Debug"));
@@ -326,7 +335,7 @@ void MainWindow::createDockedWidgets()
 	QDockWidget *dk_startupcode = new QDockWidget("Startup Code", this);
 	dk_startupcode->setObjectName("dock_startupcode");
 
-	_startupcode = new StartupCode(dk_startupcode);
+	_startupcode = new StartupCode(this, dk_startupcode);
 	connect(_startupcode, &StartupCode::showCode, this, &MainWindow::showCode);
 	connect(_startupcode, &StartupCode::changed, this, &MainWindow::processRestart);
 
@@ -359,6 +368,7 @@ void MainWindow::createDockedWidgets()
 
 	_callgraph = new Callgraph(this, dk_callgraph);
 	connect(_callgraph, &Callgraph::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
+	connect(this, &MainWindow::signalProjectChanged, _callgraph, &Callgraph::onProjectChanged);
 
 	dk_callgraph->setWidget(_callgraph);
 	addDockWidget(Qt::RightDockWidgetArea, dk_callgraph);
@@ -371,6 +381,7 @@ void MainWindow::createDockedWidgets()
 
 	_templatekind = new TemplateKind(this, dk_templatekind);
 	connect(_templatekind, &TemplateKind::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
+	connect(this, &MainWindow::signalProjectChanged, _templatekind, &TemplateKind::onProjectChanged);
 
 	dk_templatekind->setWidget(_templatekind);
 	addDockWidget(Qt::RightDockWidgetArea, dk_templatekind);
@@ -404,19 +415,22 @@ void MainWindow::createWidgets()
 	cmdlayout->addWidget(_cmd);
 
 	// body: error
-	_error = new Error(root);
+	_error = new Error(this, root);
 	_error->setVisible(false);
 	connect(_error, &Error::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
+	connect(this, &MainWindow::signalProjectChanged, _error, &Error::onProjectChanged);
 
 	// body: frame
 	_frame = new Frame(nullptr, this, root);
 	_frame->setVisible(false);
 	connect(_frame, &Frame::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
+	connect(this, &MainWindow::signalProjectChanged, _frame, &Frame::onProjectChanged);
 
 	// body: backtrace
 	_backtrace = new Backtrace(this, root);
 	connect(_backtrace, &Backtrace::showFileAndLine, this, &MainWindow::showFileAndLine, Qt::QueuedConnection);
-	
+	connect(this, &MainWindow::signalProjectChanged, _backtrace, &Backtrace::onProjectChanged);
+
 	// body: editor
 	_editortab = new QTabWidget(root);
 	_editortab->setTabsClosable(true);
@@ -559,6 +573,9 @@ void MainWindow::loadFile(const QString &fileName)
 	setCurrentFile(fileName);
 	loadProject();
 	statusBar()->showMessage(tr("File loaded"), 2000);
+
+	onProjectChanged();
+	connect(_project, &Project::onProjectChanged, this, &MainWindow::onProjectChanged);
 }
 
 bool MainWindow::saveFile(const QString &fileName)
@@ -765,7 +782,8 @@ int MainWindow::createTabEditor(const QString &filename)
 	if (fi.isAbsolute()) {
 		tabname = fi.fileName();
 	}
-	TabEditor *editor = new TabEditor;
+	TabEditor *editor = new TabEditor(this);
+	connect(this, &MainWindow::signalProjectChanged, editor, &TabEditor::onProjectChanged);
 	editor->setCurrentFilename(filename);
 	return _editortab->addTab(editor, tabname);
 }
@@ -1120,7 +1138,7 @@ void MainWindow::menuProjectSettings()
 	if (!_project)
 		return;
 
-	ProjectSettings settings(_project, this);
+	ProjectSettings settings(this, _project, this);
 	if (settings.exec()) {
 		loadProject();
 
@@ -1364,6 +1382,32 @@ QString MainWindow::identCPPType(const QString &type)
 	return type;
 }
 
+msgwidget::highlighter::HL_CPP *MainWindow::createCPPHighligher(QTextDocument *parent)
+{
+	msgwidget::highlighter::HL_CPP *ret = new msgwidget::highlighter::HL_CPP(parent);
+	if (_project)
+	{
+		for (auto &i : _project->codeHighlight()) {
+			if (i->enabled) {
+				QTextCharFormat chlformat;
+				if (i->fgcolor)
+					chlformat.setForeground(i->fgcolor.value());
+				if (i->bgcolor)
+					chlformat.setBackground(i->bgcolor.value());
+				if (i->bold)
+					chlformat.setFontWeight(QFont::Bold);
+
+				msgwidget::highlighter::HL_CPP::HighlightingRule rule;
+				rule.pattern = QRegularExpression(i->regexp);
+
+				rule.format = chlformat;
+				ret->customHighlightingRules.append(rule);
+			}
+		}
+	}
+	return ret;
+}
+
 void MainWindow::checkForUpdates()
 {
 	_ghrel->load("RangelReale", "msgui");
@@ -1376,7 +1420,8 @@ void MainWindow::ghrelLog(const QString &message)
 
 void MainWindow::ghrelError(const QString &message)
 {
-	logger()->logger("updatecheck")->error(message);
+	if (_showupdatewindow)
+		logger()->logger("updatecheck")->error(message);
 }
 
 void MainWindow::checkRelease(bool showWindow)

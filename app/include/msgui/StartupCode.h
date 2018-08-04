@@ -1,5 +1,6 @@
 #pragma once
 
+#include "msgui/interfaces.h"
 #include "msgui/Project.h"
 #include "msgwidget/UpDownListWidget.h"
 
@@ -9,7 +10,7 @@ class StartupCode : public msgwidget::UpDownListWidget
 {
 	Q_OBJECT
 public:
-	StartupCode(QWidget *parent);
+	StartupCode(itf::Configuration *configuration, QWidget *parent);
 
 	void loadProject(Project *project);
 signals:
@@ -23,6 +24,8 @@ private slots:
 	void onItemDoubleClicked(QListWidgetItem*);
 	void onItemPositionChanged();
 private:
+	itf::Configuration *_configuration;
+
 	void writeSettings();
 	QString firstLine(const QString &data);
 

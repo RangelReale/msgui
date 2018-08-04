@@ -1,15 +1,14 @@
 #include "msgui/TabEditor.h"
-#include "msgwidget/highlighter/HL_CPP.h"
 
 #include <mredit/margin/MarginStacker.h>
 
 namespace msgui {
 
-TabEditor::TabEditor(QWidget *parent) :
-	mredit::Editor(parent), _currentFilename()
+TabEditor::TabEditor(itf::Configuration *configuration, QWidget *parent) :
+	mredit::Editor(parent), _configuration(configuration), _currentFilename()
 {
 	setReadOnly(true);
-	new msgwidget::highlighter::HL_CPP(document());
+	_configuration->createCPPHighligher(document());
 
 	marginStacker()->setVisible(mredit::Global::Margin::BookmarkMargin, true);
 	marginStacker()->setVisible(mredit::Global::Margin::NumberMargin, true);
@@ -48,5 +47,10 @@ void TabEditor::setCurrentFilename(const QString &filename)
 	_currentFilename = filename;
 }
 
+void TabEditor::onProjectChanged()
+{
+	// change highligther
+	_configuration->createCPPHighligher(document());
+}
 
 }

@@ -13,8 +13,8 @@
 
 namespace msgui {
 
-ProjectSettings::ProjectSettings(Project *project, QWidget *parent) : 
-	QDialog(parent, Qt::MSWindowsFixedSizeDialogHint), _project(project)
+ProjectSettings::ProjectSettings(itf::Configuration *configuration, Project *project, QWidget *parent) :
+	QDialog(parent, Qt::MSWindowsFixedSizeDialogHint), _configuration(configuration), _project(project)
 {
 	setWindowTitle("Project settings");
 
@@ -129,7 +129,7 @@ void ProjectSettings::writeSettings()
 
 void ProjectSettings::btnStartupCodeAddClicked()
 {
-	CodeDialog d("", this);
+	CodeDialog d(_configuration, "", this);
 	if (d.exec()) {
 		QListWidgetItem *li = new QListWidgetItem(firstLine(d.text()), _startupcodes->listWidget());
 		li->setData(FILEDATA_ROLE, d.text());
@@ -143,7 +143,7 @@ void ProjectSettings::btnStartupCodeEditClicked()
 {
 	if (_startupcodes->listWidget()->currentRow() == -1) return;
 
-	CodeDialog d(_startupcodes->listWidget()->item(_startupcodes->listWidget()->currentRow())->data(FILEDATA_ROLE).toString(), this);
+	CodeDialog d(_configuration, _startupcodes->listWidget()->item(_startupcodes->listWidget()->currentRow())->data(FILEDATA_ROLE).toString(), this);
 	if (d.exec()) {
 		_startupcodes->listWidget()->item(_startupcodes->listWidget()->currentRow())->setText(firstLine(d.text()));
 		_startupcodes->listWidget()->item(_startupcodes->listWidget()->currentRow())->setData(FILEDATA_ROLE, d.text());

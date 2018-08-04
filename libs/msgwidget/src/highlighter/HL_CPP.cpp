@@ -72,6 +72,13 @@ void HL_CPP::highlightBlock(const QString &text)
 			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
 		}
 	}
+	foreach(const HighlightingRule &rule, customHighlightingRules) {
+		QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+		while (matchIterator.hasNext()) {
+			QRegularExpressionMatch match = matchIterator.next();
+			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+		}
+	}
 	setCurrentBlockState(0);
 
 	int startIndex = 0;

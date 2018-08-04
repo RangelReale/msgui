@@ -1,4 +1,3 @@
 * Fullscreen forwardtrace
-* Highligh user-defined words/regex
-* Copy/paste error and log messages
+* Copy/paste log messages
 * Startup code on main window disable only buttons on debug

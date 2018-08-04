@@ -1,5 +1,7 @@
 #pragma once
 
+#include "msgui/interfaces.h"
+
 #include <mredit/Editor.h>
 
 #include <QDialog>
@@ -10,7 +12,7 @@ namespace msgui {
 class CodeDialog : public QDialog
 {
 public:
-	CodeDialog(const QString &code, QWidget *parent);
+	CodeDialog(itf::Configuration *configuration, const QString &code, QWidget *parent);
 
 	QString text() const;
 private slots:
@@ -19,6 +21,7 @@ private slots:
 protected:
 	void keyPressEvent(QKeyEvent *);
 private:
+	itf::Configuration *_configuration;
 	mredit::Editor *_editor;
 };
 

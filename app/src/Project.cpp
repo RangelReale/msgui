@@ -25,6 +25,7 @@ bool Project::isModified() const
 void Project::setModified(bool value)
 {
 	_modified = value;
+	emit onProjectChanged();
 }
 
 msglib::CheckStringList &Project::startupCodes()
@@ -42,7 +43,7 @@ QStringList &Project::compilerFlags()
 	return _compilerflags;
 }
 
-QList<ProjectCodeHighlight::ptr> Project::codeHighlight()
+QList<ProjectCodeHighlight::ptr> &Project::codeHighlight()
 {
 	return _codehighlight;
 }
@@ -89,6 +90,39 @@ void Project::loadFromXml(const QDomDocument &doc)
 				}
 
 				_startupCodes.append(sdata);
+				ie = ie.nextSiblingElement();
+			}
+		}
+		else if (e.tagName() == "codehighlight")
+		{
+			QDomElement ie = e.firstChildElement();
+			while (!ie.isNull())
+			{
+				if (ie.tagName() != "item")
+					throw std::runtime_error("Invalid startupcode inside project file");
+
+				auto sdata(std::make_shared<ProjectCodeHighlight>());
+
+				if (ie.hasAttribute("enabled"))
+				{
+					sdata->enabled = ie.attribute("enabled") != "false";
+				}
+
+				QDomElement iedata;
+				iedata = ie.firstChildElement("regexp");
+				if (!iedata.isNull())
+					sdata->regexp = iedata.text();
+				iedata = ie.firstChildElement("fgcolor");
+				if (!iedata.isNull() && !iedata.text().trimmed().isNull())
+					sdata->fgcolor = QColor(iedata.text());
+				iedata = ie.firstChildElement("bgcolor");
+				if (!iedata.isNull() && !iedata.text().trimmed().isNull())
+					sdata->bgcolor = QColor(iedata.text());
+				iedata = ie.firstChildElement("bold");
+				if (!iedata.isNull())
+					sdata->bold = iedata.text() == "true";
+
+				_codehighlight.append(sdata);
 				ie = ie.nextSiblingElement();
 			}
 		}
@@ -139,6 +173,39 @@ void Project::saveToXml(QDomDocument &doc)
 			}
 			eItem.appendChild(doc.createCDATASection(i->str));
 			eStartupCode.appendChild(eItem);
+		}
+	}
+	if (!_codehighlight.isEmpty()) {
+		QDomElement eCodeHighlight = doc.createElement("codehighlight");
+		root.appendChild(eCodeHighlight);
+		for (auto &i : _codehighlight) {
+			QDomElement eItem = doc.createElement("item");
+			if (!i->enabled) {
+				eItem.setAttribute("enabled", "false");
+			}
+
+			QDomElement iRegExp = doc.createElement("regexp");
+			iRegExp.appendChild(doc.createCDATASection(i->regexp));
+			eItem.appendChild(iRegExp);
+
+			if (i->fgcolor)
+			{
+				QDomElement iColor = doc.createElement("fgcolor");
+				iColor.appendChild(doc.createCDATASection(i->fgcolor.value().name(QColor::HexRgb)));
+				eItem.appendChild(iColor);
+			}
+			if (i->bgcolor)
+			{
+				QDomElement iColor = doc.createElement("bgcolor");
+				iColor.appendChild(doc.createCDATASection(i->bgcolor.value().name(QColor::HexRgb)));
+				eItem.appendChild(iColor);
+			}
+
+			QDomElement iBold = doc.createElement("bold");
+			iBold.appendChild(doc.createTextNode(i->bold ? "true" : "false"));
+			eItem.appendChild(iBold);
+
+			eCodeHighlight.appendChild(eItem);
 		}
 	}
 	if (!_includePaths.isEmpty()) {

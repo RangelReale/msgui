@@ -1,5 +1,4 @@
 #include "msgui/ProjectSettingsCodeHighlight.h"
-#include "msgui/CodeHighlightEditDialog.h"
 
 #include <QSettings>
 #include <QDir>
@@ -9,7 +8,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 
-#define FILEDATA_ROLE 9588
+#define CHINFO_ROLE 8123
 
 namespace msgui {
 
@@ -53,54 +52,69 @@ ProjectSettingsCodeHighlight::ProjectSettingsCodeHighlight(Project *project, QWi
 
 void ProjectSettingsCodeHighlight::readSettings()
 {
-	for (auto &i : _project->startupCodes()) {
-		/*
-		QListWidgetItem *li = new QListWidgetItem(firstLine(i->str), _codehighlight->listWidget());
-		li->setData(FILEDATA_ROLE, i->str);
+	for (auto &i : _project->codeHighlight()) {
+		QListWidgetItem *li = new QListWidgetItem(i->regexp, _codehighlight->listWidget());
+		chrole_t chinfo;
+		chinfo["bold"] = i->bold;
+		chinfo["fgcolor"] = i->fgcolor ? i->fgcolor.value() : QVariant();
+		chinfo["bgcolor"] = i->bgcolor ? i->bgcolor.value() : QVariant();
+		li->setData(CHINFO_ROLE, chinfo);
 		li->setFlags(li->flags() | Qt::ItemIsUserCheckable);
-		li->setCheckState(i->checked ? Qt::Checked : Qt::Unchecked);
+		li->setCheckState(i->enabled ? Qt::Checked : Qt::Unchecked);
 		_codehighlight->listWidget()->addItem(li);
-		*/
 	}
 }
 
 void ProjectSettingsCodeHighlight::writeSettings()
 {
-	/*
-	_project->startupCodes().clear();
+	_project->codeHighlight().clear();
 	for (int i = 0; i < _codehighlight->listWidget()->count(); i++) {
-		_project->startupCodes().append(std::make_shared<msglib::CheckStringListData>(_codehighlight->listWidget()->item(i)->data(FILEDATA_ROLE).toString(), _codehighlight->listWidget()->item(i)->checkState() != Qt::Unchecked));
+		QListWidgetItem *li = _codehighlight->listWidget()->item(i);
+		chrole_t chinfo = li->data(CHINFO_ROLE).toMap();
+		_project->codeHighlight().append(std::make_shared<ProjectCodeHighlight>(li->checkState() != Qt::Unchecked, li->text(),
+			chinfo["fgcolor"].isValid() ? chinfo["fgcolor"].value<QColor>() : tl::optional<QColor>{},
+			chinfo["bgcolor"].isValid() ? chinfo["bgcolor"].value<QColor>() : tl::optional<QColor>{},
+			chinfo["bold"].toBool()));
 	}
-	*/
 
 	_project->setModified();
 }
 
 void ProjectSettingsCodeHighlight::btnCodeHighlightAddClicked()
 {
-	CodeHighlightEditDialog d({}, {}, this);
+	CodeHighlightEditDialog d(this);
 	if (d.exec()) {
-		/*
-		QListWidgetItem *li = new QListWidgetItem(firstLine(d.text()), _codehighlight->listWidget());
-		li->setData(FILEDATA_ROLE, d.text());
+		QListWidgetItem *li = new QListWidgetItem(d.regexp(), _codehighlight->listWidget());
+		chrole_t chinfo;
+		chinfo["fgcolor"] = d.fgcolor()?d.fgcolor().value():QVariant();
+		chinfo["bgcolor"] = d.bgcolor()?d.bgcolor().value():QVariant();
+		chinfo["bold"] = d.bold();
+		li->setData(CHINFO_ROLE, chinfo);
 		li->setFlags(li->flags() | Qt::ItemIsUserCheckable);
 		li->setCheckState(Qt::Checked);
 		_codehighlight->listWidget()->addItem(li);
-		*/
 	}
 }
 
 void ProjectSettingsCodeHighlight::btnCodeHighlightEditClicked()
 {
-	/*
 	if (_codehighlight->listWidget()->currentRow() == -1) return;
 
-	CodeDialog d(_codehighlight->listWidget()->item(_codehighlight->listWidget()->currentRow())->data(FILEDATA_ROLE).toString(), this);
+	QListWidgetItem *li = _codehighlight->listWidget()->item(_codehighlight->listWidget()->currentRow());
+	chrole_t chinfo = li->data(CHINFO_ROLE).toMap();
+	CodeHighlightEditDialog d(li->text(), 
+		chinfo["fgcolor"].isValid() ? chinfo["fgcolor"].value<QColor>() : tl::optional<QColor>{},
+		chinfo["bgcolor"].isValid() ? chinfo["bgcolor"].value<QColor>() : tl::optional<QColor>{},
+		chinfo["bold"].toBool(),
+	this);
 	if (d.exec()) {
-		_codehighlight->listWidget()->item(_codehighlight->listWidget()->currentRow())->setText(firstLine(d.text()));
-		_codehighlight->listWidget()->item(_codehighlight->listWidget()->currentRow())->setData(FILEDATA_ROLE, d.text());
+		li->setText(d.regexp());
+		chrole_t chinfo;
+		chinfo["fgcolor"] = d.fgcolor() ? d.fgcolor().value() : QVariant();
+		chinfo["bgcolor"] = d.bgcolor() ? d.bgcolor().value() : QVariant();
+		chinfo["bold"] = d.bold();
+		li->setData(CHINFO_ROLE, chinfo);
 	}
-	*/
 }
 
 void ProjectSettingsCodeHighlight::btnCodeHighlightRemoveClicked()

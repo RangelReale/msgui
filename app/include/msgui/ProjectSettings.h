@@ -1,6 +1,7 @@
 #pragma once
 
 #include "msgui/Project.h"
+#include "msgui/interfaces.h"
 #include "msgwidget/UpDownListWidget.h"
 
 #include <QDialog>
@@ -12,7 +13,7 @@ namespace msgui {
 class ProjectSettings : public QDialog
 {
 public:
-	ProjectSettings(Project *project, QWidget *parent);
+	ProjectSettings(itf::Configuration *configuration, Project *project, QWidget *parent);
 private slots:
 	void btnStartupCodeAddClicked();
 	void btnStartupCodeEditClicked();
@@ -26,6 +27,7 @@ private slots:
 	void onBtnOk();
 	void onBtnCancel();
 private:
+	itf::Configuration *_configuration;
 	QString firstLine(const QString &data);
 
 	void readSettings();

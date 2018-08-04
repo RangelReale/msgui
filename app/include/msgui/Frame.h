@@ -22,6 +22,8 @@ public:
 	QSize sizeHint() const override;
 signals:
 	void showFileAndLine(const QString &fileAndFile);
+public slots:
+	void onProjectChanged();
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
 private:

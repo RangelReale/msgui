@@ -1,6 +1,5 @@
 #include "msgui/Callgraph.h"
 #include "msgui/Util.h"
-#include "msgwidget/highlighter/HL_CPP.h"
 
 #include <mredit/Label.h>
 
@@ -49,7 +48,7 @@ void Callgraph::setCallgraph(msglib::cmd::call_graph::ptr callgraph)
 
 				mredit::Label *namelbl = new mredit::Label(this);
 				namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-				new msgwidget::highlighter::HL_CPP(namelbl->document());
+				_configuration->createCPPHighligher(namelbl->document());
 				namelbl->setPlainText(_configuration->identCPPType(node->node->name));
 				setItemWidget(item, 0, namelbl);
 
@@ -86,6 +85,11 @@ void Callgraph::btItemClicked(QTreeWidgetItem *item, int column)
 void Callgraph::columnResized(int logicalIndex, int oldSize, int newSize)
 {
 	scheduleDelayedItemsLayout();
+}
+
+void Callgraph::onProjectChanged()
+{
+	setCallgraph(_callgraph);
 }
 
 

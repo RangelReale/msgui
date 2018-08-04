@@ -1,6 +1,5 @@
 #include "msgui/TemplateKind.h"
 #include "msgui/Util.h"
-#include "msgwidget/highlighter/HL_CPP.h"
 
 #include <mredit/Label.h>
 
@@ -42,7 +41,7 @@ void TemplateKind::addTemplateKind(const QString &name, const QString &kind, con
 
 	mredit::Label *msglbl = new mredit::Label(this);
 	msglbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-	new msgwidget::highlighter::HL_CPP(msglbl->document());
+	_configuration->createCPPHighligher(msglbl->document());
 	msglbl->setPlainText(_configuration->identCPPType(name));
 	setItemWidget(item, 0, msglbl);
 	QFileInfo fi(sourceLocation);
@@ -68,6 +67,11 @@ void TemplateKind::btItemClicked(QTreeWidgetItem *item, int column)
 void TemplateKind::columnResized(int logicalIndex, int oldSize, int newSize)
 {
 	scheduleDelayedItemsLayout();
+}
+
+void TemplateKind::onProjectChanged()
+{
+	// TODO
 }
 
 }
