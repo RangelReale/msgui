@@ -24,6 +24,12 @@ Frame::Frame(msglib::cmd::base::ptr frame, itf::Configuration *configuration, QW
 
 	_name = new mredit::Label(this);
 	_name->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+	_name->setFrameStyle(QFrame::Sunken);
+	_name->setFrameShape(QFrame::Panel);
+	QPalette pal(_name->palette());
+	pal.setColor(_name->backgroundRole(), Qt::white);
+	_name->setPalette(pal);
+	_name->setAutoFillBackground(true);
 	_configuration->createCPPHighligher(_name->document());
 	_name->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
 
@@ -95,6 +101,7 @@ void Frame::mousePressEvent(QMouseEvent *event)
 
 void Frame::onProjectChanged()
 {
+	_configuration->createCPPHighligher(_name->document());
 	setFrame(_frame);
 }
 
