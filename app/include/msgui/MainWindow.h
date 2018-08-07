@@ -26,6 +26,8 @@
 #include <QListWidget>
 #include <QMenu>
 #include <QTabWidget>
+#include <QDropEvent>
+#include <QDragEnterEvent>
 
 #include <log4qt/logger.h>
 
@@ -59,6 +61,9 @@ public:
 signals:
 	void signalProjectChanged();
 protected:
+	void dropEvent(QDropEvent *event) override;
+	void dragEnterEvent(QDragEnterEvent *event) override;
+
 	void closeEvent(QCloseEvent *event) override;
 private slots:
 	void onProjectChanged();
@@ -115,6 +120,7 @@ private slots:
 	void menuFileSettings();
 	void menuFileRecent();
 
+	void menuViewOpenSourceFile();
 	void menuViewIndentCPPTypes();
 
 	void menuProjectSettings();

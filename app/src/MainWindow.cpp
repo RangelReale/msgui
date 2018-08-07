@@ -32,6 +32,7 @@
 #include <QSplitter>
 #include <QCryptographicHash>
 #include <QVersionNumber>
+#include <QMimeData>
 
 #include "version.h"
 
@@ -44,6 +45,7 @@ MainWindow::MainWindow(const QString &filename) :
 
 	_windowtitle = "MSGUI - Metashell GUI";
 	setWindowTitle(_windowtitle);
+	setAcceptDrops(true);
 
 	createActions();
 	createStatusBar();
@@ -83,6 +85,25 @@ MainWindow::~MainWindow()
 	}
 
 	closeProject();
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+	QList<QUrl> urls = event->mimeData()->urls();
+	foreach(QUrl url, urls)
+	{
+		//logger()->info("Dropped file: %1", url.toString());
+		if (url.isLocalFile())
+		{
+			openSourceFile(url.toLocalFile());
+		}
+	}
+	event->acceptProposedAction();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+	event->acceptProposedAction();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -125,7 +146,7 @@ void MainWindow::open()
 {
 	if (maybeSave()) 
 	{
-		QString fileName = QFileDialog::getOpenFileName(this, "Load file", QString(), "MSGUI Project;*.msgp");
+		QString fileName = QFileDialog::getOpenFileName(this, "Load file", QString(), "MSGUI Project (*.msgp)");
 		if (!fileName.isEmpty()) 
 		{
 			loadFile(fileName);
@@ -194,7 +215,8 @@ void MainWindow::createActions()
 	QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 	_viewWindowMenu = viewMenu->addMenu(tr("&Window"));
 	viewMenu->addSeparator();
-
+	QAction *viewOpenSourceFile = viewMenu->addAction(tr("&Open source file..."), this, &MainWindow::menuViewOpenSourceFile);
+	viewMenu->addSeparator();
 	_viewIndentCPPTypes = viewMenu->addAction(tr("&Indent C++ types"), this, &MainWindow::menuViewIndentCPPTypes);
 	_viewIndentCPPTypes->setCheckable(true);
 
@@ -461,7 +483,7 @@ void MainWindow::readSettings()
 {
 	QSettings settings;
 
-	_viewIndentCPPTypes->setChecked(settings.value("view_indentcpptypes", true).toBool());
+	_viewIndentCPPTypes->setChecked(settings.value("view_indentcpptypes", false).toBool());
 	_debugStepOnStart->setChecked(settings.value("dbg_steponstart", true).toBool());
 	_debugForwardtraceOnStart->setChecked(settings.value("dbg_forwardtraceonstart", true).toBool());
 
@@ -1126,6 +1148,15 @@ void MainWindow::menuFileRecent()
 	QAction *action = qobject_cast<QAction *>(sender());
 	if (action)
 		loadFile(action->data().toString());
+}
+
+void MainWindow::menuViewOpenSourceFile()
+{
+	QString filename = QFileDialog::getOpenFileName(this, "Open source file", QString(), "Any file (*.*)");
+	if (!filename.isEmpty())
+	{
+		openSourceFile(filename);
+	}
 }
 
 void MainWindow::menuViewIndentCPPTypes()
