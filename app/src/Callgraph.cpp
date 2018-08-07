@@ -49,7 +49,7 @@ void Callgraph::setCallgraph(msglib::cmd::call_graph::ptr callgraph)
 				mredit::Label *namelbl = new mredit::Label(this);
 				namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 				_configuration->createCPPHighligher(namelbl->document());
-				namelbl->setPlainText(_configuration->identCPPType(node->node->name));
+				namelbl->setPlainText(_configuration->indentCPPType(node->node->name));
 				setItemWidget(item, 0, namelbl);
 
 				item->setText(1, node->node->kind);
@@ -59,7 +59,7 @@ void Callgraph::setCallgraph(msglib::cmd::call_graph::ptr callgraph)
 				else
 					item->setText(2, node->node->source_location);
 
-				item->setToolTip(0, QString("<pre>%1</pre>").arg(Util::identCPPType(node->node->name).toHtmlEscaped()));
+				item->setToolTip(0, QString("<pre>%1</pre>").arg(Util::indentCPPType(node->node->name).toHtmlEscaped()));
 
 				item->setExpanded(true);
 			}

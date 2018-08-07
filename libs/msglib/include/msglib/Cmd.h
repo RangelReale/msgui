@@ -132,12 +132,12 @@ class comment_paragraph
 public:
 	using ptr = std::shared_ptr<comment_paragraph>;
 
-	comment_paragraph(QString first_line_of_identation,
-		QString rest_of_lines_of_identation,
+	comment_paragraph(QString first_line_of_indentation,
+		QString rest_of_lines_of_indentation,
 		QString content);
 
-	QString first_line_of_identation;
-	QString rest_of_lines_of_identation;
+	QString first_line_of_indentation;
+	QString rest_of_lines_of_indentation;
 	QString content;
 };
 

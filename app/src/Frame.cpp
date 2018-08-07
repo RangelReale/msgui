@@ -19,21 +19,17 @@ Frame::Frame(msglib::cmd::base::ptr frame, itf::Configuration *configuration, QW
 	layout->setContentsMargins(0, 0, 0, 0);
 
 	_kind = new QLabel(this);
-	_kind->setWordWrap(true);
+	//_kind->setWordWrap(true);
 	_kind->setContentsMargins(2, 2, 2, 2);
 
-	_name = new mredit::Label(this);
+	_name = new mredit::Editor(this);
 	_name->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-	_name->setFrameStyle(QFrame::Sunken);
-	_name->setFrameShape(QFrame::Panel);
-	QPalette pal(_name->palette());
-	pal.setColor(_name->backgroundRole(), Qt::white);
-	_name->setPalette(pal);
-	_name->setAutoFillBackground(true);
+	_name->setReadOnly(true);
+	_name->setFrameStyle(QFrame::Plain);
+	_name->setFrameShape(QFrame::NoFrame);
 	_configuration->createCPPHighligher(_name->document());
-	_name->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
 
-	layout->addWidget(_kind, 1);
+	layout->addWidget(_kind, 0);
 	layout->addWidget(_name, 5);
 
 	setFrame(frame);
@@ -56,15 +52,15 @@ void Frame::setFrame(msglib::cmd::base::ptr frame)
 		if (auto c = std::dynamic_pointer_cast<msglib::cmd::frame_base>(frame)) {
 			_kind->setStyleSheet("background-color: yellow;");
 			_kind->setText(c->kind);
-			_name->setPlainText(_configuration->identCPPType(c->name));
+			_name->setPlainText(_configuration->indentCPPType(c->name));
 
-			_name->setToolTip(QString("<pre>%1</pre>").arg(Util::identCPPType(c->name).toHtmlEscaped()));
+			_name->setToolTip(QString("<pre>%1</pre>").arg(Util::indentCPPType(c->name).toHtmlEscaped()));
 		}
 		else if (auto c = std::dynamic_pointer_cast<msglib::cmd::type_>(frame)) {
 			_kind->setStyleSheet("background-color: yellow;");
 			_kind->setText("Type");
-			_name->setPlainText(_configuration->identCPPType(c->type_name));
-			_name->setToolTip(QString("<pre>%1</pre>").arg(Util::identCPPType(c->type_name).toHtmlEscaped()));
+			_name->setPlainText(_configuration->indentCPPType(c->type_name));
+			_name->setToolTip(QString("<pre>%1</pre>").arg(Util::indentCPPType(c->type_name).toHtmlEscaped()));
 		}
 		else if (auto c = std::dynamic_pointer_cast<msglib::cmd::cpp_code>(frame)) {
 			_kind->setStyleSheet("background-color: yellow;");

@@ -100,10 +100,10 @@ code_completion_result::code_completion_result() : base()
 //
 // comment_paragraph
 //
-comment_paragraph::comment_paragraph(QString first_line_of_identation,
-	QString rest_of_lines_of_identation, QString content) : 
-	first_line_of_identation(first_line_of_identation),
-	rest_of_lines_of_identation(rest_of_lines_of_identation), content(content)
+comment_paragraph::comment_paragraph(QString first_line_of_indentation,
+	QString rest_of_lines_of_indentation, QString content) : 
+	first_line_of_indentation(first_line_of_indentation),
+	rest_of_lines_of_indentation(rest_of_lines_of_indentation), content(content)
 {
 
 }

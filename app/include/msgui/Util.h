@@ -5,6 +5,6 @@
 namespace msgui {
 namespace Util {
 
-QString identCPPType(const QString &type);
+QString indentCPPType(const QString &type);
 
 } }

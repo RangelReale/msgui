@@ -5,10 +5,10 @@
 namespace msgui {
 namespace Util {
 
-QString identCPPType(const QString &type)
+QString indentCPPType(const QString &type)
 {
 	QRegularExpression re("[<>]");
-	QString ident("    ");
+	QString indent("    ");
 
 	QString ret;
 	int j = 0;
@@ -22,7 +22,7 @@ QString identCPPType(const QString &type)
 			comma = QStringRef(&type, newj + 1, 1);
 		}
 		if (sep == "<") {
-			ret.append(ident.repeated(level));
+			ret.append(indent.repeated(level));
 			ret.append(str);
 			ret.append(sep);
 			ret.append("\n");
@@ -31,13 +31,13 @@ QString identCPPType(const QString &type)
 		}
 		else if (sep == ">") {
 			if (!str.isEmpty()) {
-				ret.append(ident.repeated(level));
+				ret.append(indent.repeated(level));
 				ret.append(str);
 				ret.append("\n");
 			}
 			// put > alone in next line
 			level--;
-			ret.append(ident.repeated(level));
+			ret.append(indent.repeated(level));
 			ret.append(sep);
 			// let comma on the same line as the end symbol
 			if (comma == ",") {

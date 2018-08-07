@@ -42,12 +42,12 @@ void TemplateKind::addTemplateKind(const QString &name, const QString &kind, con
 	mredit::Label *msglbl = new mredit::Label(this);
 	msglbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 	_configuration->createCPPHighligher(msglbl->document());
-	msglbl->setPlainText(_configuration->identCPPType(name));
+	msglbl->setPlainText(_configuration->indentCPPType(name));
 	setItemWidget(item, 0, msglbl);
 	QFileInfo fi(sourceLocation);
 	item->setText(1, fi.fileName());
 
-	item->setToolTip(0, QString("<pre>%1</pre>").arg(Util::identCPPType(name).toHtmlEscaped()));
+	item->setToolTip(0, QString("<pre>%1</pre>").arg(Util::indentCPPType(name).toHtmlEscaped()));
 
 	addTopLevelItem(item);
 

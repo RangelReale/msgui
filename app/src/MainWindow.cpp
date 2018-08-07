@@ -195,8 +195,8 @@ void MainWindow::createActions()
 	_viewWindowMenu = viewMenu->addMenu(tr("&Window"));
 	viewMenu->addSeparator();
 
-	_viewIdentCPPTypes = viewMenu->addAction(tr("&Ident C++ types"), this, &MainWindow::menuViewIdentCPPTypes);
-	_viewIdentCPPTypes->setCheckable(true);
+	_viewIndentCPPTypes = viewMenu->addAction(tr("&Indent C++ types"), this, &MainWindow::menuViewIndentCPPTypes);
+	_viewIndentCPPTypes->setCheckable(true);
 
 	// Project
 	QMenu *projectMenu = menuBar()->addMenu(tr("&Project"));
@@ -461,7 +461,7 @@ void MainWindow::readSettings()
 {
 	QSettings settings;
 
-	_viewIdentCPPTypes->setChecked(settings.value("view_identcpptypes", true).toBool());
+	_viewIndentCPPTypes->setChecked(settings.value("view_indentcpptypes", true).toBool());
 	_debugStepOnStart->setChecked(settings.value("dbg_steponstart", true).toBool());
 	_debugForwardtraceOnStart->setChecked(settings.value("dbg_forwardtraceonstart", true).toBool());
 
@@ -492,7 +492,7 @@ void MainWindow::writeSettings()
 {
 	QSettings settings;
 
-	settings.setValue("view_identcpptypes", _viewIdentCPPTypes->isChecked());
+	settings.setValue("view_indentcpptypes", _viewIndentCPPTypes->isChecked());
 	settings.setValue("dbg_steponstart", _debugStepOnStart->isChecked());
 	settings.setValue("dbg_forwardtraceonstart", _debugForwardtraceOnStart->isChecked());
 
@@ -1128,7 +1128,7 @@ void MainWindow::menuFileRecent()
 		loadFile(action->data().toString());
 }
 
-void MainWindow::menuViewIdentCPPTypes()
+void MainWindow::menuViewIndentCPPTypes()
 {
 
 }
@@ -1373,11 +1373,11 @@ void MainWindow::createProcess()
 	}
 }
 
-QString MainWindow::identCPPType(const QString &type)
+QString MainWindow::indentCPPType(const QString &type)
 {
-	if (_viewIdentCPPTypes->isChecked())
+	if (_viewIndentCPPTypes->isChecked())
 	{
-		return Util::identCPPType(type);
+		return Util::indentCPPType(type);
 	}
 	return type;
 }

@@ -3,7 +3,7 @@
 #include "msgui/interfaces.h"
 
 #include <msglib/Cmd.h>
-#include <mredit/Label.h>
+#include <mredit/Editor.h>
 
 #include <QLabel>
 #include <QWidget>
@@ -29,7 +29,7 @@ protected:
 private:
 	itf::Configuration *_configuration;
 	QLabel * _kind;
-	mredit::Label *_name;
+	mredit::Editor *_name;
 	msglib::cmd::base::ptr _frame;
 };
 

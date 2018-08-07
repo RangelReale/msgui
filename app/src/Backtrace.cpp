@@ -45,14 +45,14 @@ void Backtrace::setBacktrace(msglib::cmd::backtrace::ptr backtrace)
 			mredit::Label *namelbl = new mredit::Label(this);
 			namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 			_configuration->createCPPHighligher(namelbl->document());
-			namelbl->setPlainText(_configuration->identCPPType(b->name));
+			namelbl->setPlainText(_configuration->indentCPPType(b->name));
 			setItemWidget(item, 1, namelbl);
 
 			item->setText(2, b->kind);
 			QFileInfo fi(b->source_location);
 			item->setText(3, fi.fileName());
 
-			item->setToolTip(1, QString("<pre>%1</pre>").arg(Util::identCPPType(b->name).toHtmlEscaped()));
+			item->setToolTip(1, QString("<pre>%1</pre>").arg(Util::indentCPPType(b->name).toHtmlEscaped()));
 
 			scheduleDelayedItemsLayout();
 		}

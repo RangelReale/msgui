@@ -54,7 +54,7 @@ public:
 	void loadFile(const QString &fileName);
 
 	// itf::Configuration
-	QString identCPPType(const QString &type) override;
+	QString indentCPPType(const QString &type) override;
 	msgwidget::highlighter::HL_CPP *createCPPHighligher(QTextDocument *parent);
 signals:
 	void signalProjectChanged();
@@ -115,7 +115,7 @@ private slots:
 	void menuFileSettings();
 	void menuFileRecent();
 
-	void menuViewIdentCPPTypes();
+	void menuViewIndentCPPTypes();
 
 	void menuProjectSettings();
 	void menuProjectCodeHighlight();
@@ -209,7 +209,7 @@ private:
 	QMenu *_viewWindowMenu;
 
 	// Actions
-	QAction *_viewIdentCPPTypes;
+	QAction *_viewIndentCPPTypes;
 
 	QAction *_debugStepOnStart;
 	QAction *_debugForwardtraceOnStart;
