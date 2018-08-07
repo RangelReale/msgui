@@ -9,7 +9,7 @@
 namespace msgui {
 
 CodeDialog::CodeDialog(itf::Configuration *configuration, const QString &code, QWidget *parent) :
-	QDialog(parent)
+	QDialog(parent), _configuration(configuration)
 {
 	setWindowTitle("Settings");
 
