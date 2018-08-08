@@ -124,12 +124,17 @@ if (ENABLE_INSTALLER)
       # Install OpenSSL DLLs
       #
       find_package(OpenSSL REQUIRED)
+      if (OPENSSL_FOUND)
+          if (OPENSSL_VERSION VERSION_GREATER_EQUAL "1.1")
+            message(FATAL_ERROR "Current Qt5 only supports OpenSSL 1.0")
+          endif()
       
-      # find parent of include dir
-      get_filename_component(ROOT_OPENSSL ${OPENSSL_INCLUDE_DIR} DIRECTORY)
-      
-      # install dlls
-      install(FILES ${ROOT_OPENSSL}/bin/ssleay32.dll ${ROOT_OPENSSL}/bin/libeay32.dll ${ROOT_OPENSSL}/bin/msvcr120.dll DESTINATION "bin")
+          # find parent of include dir
+          get_filename_component(ROOT_OPENSSL ${OPENSSL_INCLUDE_DIR} DIRECTORY)
+          
+          # install dlls
+          install(FILES ${ROOT_OPENSSL}/bin/ssleay32.dll ${ROOT_OPENSSL}/bin/libeay32.dll ${ROOT_OPENSSL}/bin/msvcr120.dll DESTINATION "bin")
+      endif()
   endif()
 
   if (APPLE)
