@@ -625,7 +625,9 @@ bool MainWindow::saveFile(const QString &fileName)
 	QApplication::restoreOverrideCursor();
 #endif
 
-	setCurrentFile(fileName);
+	if (curFile != fileName) {
+		setCurrentFile(fileName);
+	}
 	statusBar()->showMessage(tr("File saved"), 2000);
 	return true;
 }
@@ -904,6 +906,9 @@ void MainWindow::cmdExecute(QString cmd)
 void MainWindow::onLog(const Log4Qt::LoggingEvent &event)
 {
 	if (event.loggename() != "Qt" && event.level() <= Log4Qt::Level::DEBUG_INT) {
+		return;
+	}
+	if (event.loggename() == "error") {
 		return;
 	}
 	_log->addLog(event);
