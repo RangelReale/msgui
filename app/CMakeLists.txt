@@ -119,6 +119,17 @@ if (ENABLE_INSTALLER)
       include(InstallRequiredSystemLibraries)
 
       install(DIRECTORY "${CMAKE_BINARY_DIR}/windeployqt/" DESTINATION "bin")
+      
+      #
+      # Install OpenSSL DLLs
+      #
+      find_package(OpenSSL REQUIRED)
+      
+      # find parent of include dir
+      get_filename_component(ROOT_OPENSSL ${OPENSSL_INCLUDE_DIR} DIRECTORY)
+      
+      # install dlls
+      install(FILES ${ROOT_OPENSSL}/bin/ssleay32.dll ${ROOT_OPENSSL}/bin/libeay32.dll ${ROOT_OPENSSL}/bin/msvcr120.dll DESTINATION "bin")
   endif()
 
   if (APPLE)
