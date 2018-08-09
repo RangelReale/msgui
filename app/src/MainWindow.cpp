@@ -364,7 +364,9 @@ void MainWindow::createDockedWidgets()
 	dk_startupcode->setWidget(_startupcode);
 	addDockWidget(Qt::LeftDockWidgetArea, dk_startupcode);
 
-	_viewWindowMenu->addAction(dk_startupcode->toggleViewAction());
+	QAction *act_startupcode(dk_startupcode->toggleViewAction());
+	act_startupcode->setShortcut(QKeySequence(Qt::Key_F2));
+	_viewWindowMenu->addAction(act_startupcode);
 
 	// default docks size
 	resizeDocks({ dk_startupcode }, { 400 }, Qt::Horizontal);
