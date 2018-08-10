@@ -56,7 +56,7 @@ public:
 	void loadFile(const QString &fileName);
 
 	// itf::Configuration
-	QString indentCPPType(const QString &type) override;
+	QString indentCPPType(const QString &type, bool force = false) override;
 	msgwidget::highlighter::HL_CPP *createCPPHighligher(QTextDocument *parent);
 signals:
 	void signalProjectChanged();

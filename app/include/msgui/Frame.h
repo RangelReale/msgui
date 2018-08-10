@@ -8,8 +8,24 @@
 #include <QLabel>
 #include <QWidget>
 #include <QMouseEvent>
+#include <QContextMenuEvent>
 
 namespace msgui {
+
+class Frame_Editor : public mredit::Editor
+{
+	Q_OBJECT
+public:
+	using Editor::Editor;
+
+	bool forceindent = false;
+signals:
+	void forceIndentChanged();
+private slots:
+	void forceIndentClicked();
+protected:
+	void contextMenuEvent(QContextMenuEvent *event);
+};
 
 class Frame : public QWidget
 {
@@ -24,13 +40,15 @@ signals:
 	void showFileAndLine(const QString &fileAndFile);
 public slots:
 	void onProjectChanged();
+	void onForceIndentChanged();
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
 private:
 	itf::Configuration *_configuration;
 	QLabel * _kind;
-	mredit::Editor *_name;
+	Frame_Editor *_name;
 	msglib::cmd::base::ptr _frame;
+	bool _forceindent;
 };
 
 }

@@ -467,13 +467,13 @@ void MainWindow::createWidgets()
 	splitter1->setOrientation(Qt::Vertical);
 	splitter1->addWidget(_error);
 	splitter1->addWidget(_frame);
-	splitter1->addWidget(_backtrace);
 	splitter1->addWidget(_editortab);
+	splitter1->addWidget(_backtrace);
 
 	splitter1->setStretchFactor(0, 2);
 	splitter1->setStretchFactor(1, 2);
-	splitter1->setStretchFactor(2, 3);
-	splitter1->setStretchFactor(3, 6);
+	splitter1->setStretchFactor(2, 6);
+	splitter1->setStretchFactor(3, 3);
 
 	//rootlayout->setSizeConstraint(QLayout::SetMinimumSize);
 	rootlayout->addLayout(cmdlayout, 1);
@@ -1417,9 +1417,9 @@ void MainWindow::createProcess()
 	}
 }
 
-QString MainWindow::indentCPPType(const QString &type)
+QString MainWindow::indentCPPType(const QString &type, bool force)
 {
-	if (_viewIndentCPPTypes->isChecked())
+	if (force || _viewIndentCPPTypes->isChecked())
 	{
 		return Util::indentCPPType(type);
 	}

@@ -11,7 +11,7 @@ class Configuration
 {
 public:
 	virtual ~Configuration() {}
-	virtual QString indentCPPType(const QString &type) = 0;
+	virtual QString indentCPPType(const QString &type, bool force = false) = 0;
 	virtual msgwidget::highlighter::HL_CPP *createCPPHighligher(QTextDocument *parent) = 0;
 };
 
