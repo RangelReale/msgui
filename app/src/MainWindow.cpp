@@ -627,42 +627,46 @@ bool MainWindow::saveFile(const QString &fileName)
 	QApplication::restoreOverrideCursor();
 #endif
 
-	if (curFile != fileName) {
-		setCurrentFile(fileName);
-	}
+	setCurrentFile(fileName);
 	statusBar()->showMessage(tr("File saved"), 2000);
 	return true;
 }
 
 void MainWindow::setCurrentFile(const QString &fileName)
 {
-	// write previous file settings
-	writeProjectSettings();
+	bool is_same_file = fileName == curFile;
+
+	if (!is_same_file) {
+		// write previous file settings
+		writeProjectSettings();
+	}
 
 	curFile = fileName;
 	_project->setModified(false);
 	setWindowModified(false);
 
-	QString shownName = curFile;
-	if (curFile.isEmpty())
-		shownName = "untitled.msgp";
-	setWindowTitle(QString("%1 - %2").arg(_windowtitle).arg(shownName));
+	if (!is_same_file) {
+		QString shownName = curFile;
+		if (curFile.isEmpty())
+			shownName = "untitled.msgp";
+		setWindowTitle(QString("%1 - %2").arg(_windowtitle).arg(shownName));
 
-	if (!curFile.isEmpty())
-	{
-		QSettings settings;
-		QStringList files = settings.value("recentFileList").toStringList();
-		files.removeAll(fileName);
-		files.prepend(fileName);
-		while (files.size() > MaxRecentFiles)
-			files.removeLast();
+		if (!curFile.isEmpty())
+		{
+			QSettings settings;
+			QStringList files = settings.value("recentFileList").toStringList();
+			files.removeAll(fileName);
+			files.prepend(fileName);
+			while (files.size() > MaxRecentFiles)
+				files.removeLast();
 
-		settings.setValue("recentFileList", files);
-		updateRecentFileActions();
+			settings.setValue("recentFileList", files);
+			updateRecentFileActions();
+		}
+
+		// read current project file settings
+		readProjectSettings();
 	}
-
-	// read current project file settings
-	readProjectSettings();
 }
 
 void MainWindow::updateRecentFileActions()
