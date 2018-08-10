@@ -17,12 +17,16 @@ public:
 
 	const QString &currentFilename() const;
 	void setCurrentFilename(const QString &filename);
+
+	void openFileIfChanged(const QString &filename);
+	void setPlainTextResetSize(const QString &text);
 public slots:
 	void onProjectChanged();
 private:
 	itf::Configuration *_configuration;
 	int _editor_bmgroup_showpos;
 	QString _currentFilename;
+	quint64 _currentFilesize;
 };
 
 }

@@ -2,10 +2,12 @@
 
 #include <mredit/margin/MarginStacker.h>
 
+#include <QFileInfo>
+
 namespace msgui {
 
 TabEditor::TabEditor(itf::Configuration *configuration, QWidget *parent) :
-	mredit::Editor(parent), _configuration(configuration), _currentFilename()
+	mredit::Editor(parent), _configuration(configuration), _currentFilename(), _currentFilesize(0)
 {
 	setReadOnly(true);
 	_configuration->createCPPHighligher(document());
@@ -45,6 +47,21 @@ const QString &TabEditor::currentFilename() const
 void TabEditor::setCurrentFilename(const QString &filename)
 {
 	_currentFilename = filename;
+}
+
+void TabEditor::openFileIfChanged(const QString &filename)
+{
+	QFileInfo fi(filename);
+	if (fi.size() == _currentFilesize)
+		return;
+	_currentFilesize = fi.size();
+	openFile(filename);
+}
+
+void TabEditor::setPlainTextResetSize(const QString &text)
+{
+	_currentFilesize = 0;
+	setPlainText(text);
 }
 
 void TabEditor::onProjectChanged()

@@ -642,7 +642,8 @@ void MainWindow::setCurrentFile(const QString &fileName)
 	}
 
 	curFile = fileName;
-	_project->setModified(false);
+	if (_project->isModified())
+		_project->setModified(false);
 	setWindowModified(false);
 
 	if (!is_same_file) {
@@ -925,7 +926,7 @@ void MainWindow::showCode(const QString &code)
 	TabEditor *editor = findEditorWidget("Default", true, true);
 
 	editor->clearMarkSourceCode();
-	editor->setPlainText(code);
+	editor->setPlainTextResetSize(code);
 }
 
 void MainWindow::showFileAndLine(const QString &fileAndFile)
@@ -978,7 +979,7 @@ void MainWindow::showFilenameList(msglib::cmd::filename_list_base::ptr filename_
 
 	TabEditor *editor = findEditorWidget("Default", true, true);
 	editor->clearMarkSourceCode();
-	editor->setPlainText(code);
+	editor->setPlainTextResetSize(code);
 }
 
 void MainWindow::showTemplateKind(const QString &name, const QString &kind, const QString &sourceLocation)
@@ -998,7 +999,8 @@ void MainWindow::openSourceFile(const QString &filename)
 	//logger()->logger("source")->info("Open source file: %1", filename);
 
 	TabEditor *editor = findEditorWidget(filename, true, true);
-	editor->openFile(filename);
+	//editor->openFile(filename);
+	editor->openFileIfChanged(filename);
 }
 
 void MainWindow::clearMarkSourceFile()
