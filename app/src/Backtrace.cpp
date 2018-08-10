@@ -31,30 +31,39 @@ void Backtrace::setBacktrace(msglib::cmd::backtrace::ptr backtrace)
 {
 	if (backtrace)
 	{
-		clear();
-		int ct = 0;
-		for (auto &b : backtrace->frames) {
-			QTreeWidgetItem *item = new QTreeWidgetItem(this);
+		setUpdatesEnabled(false);
+		try
+		{
+			clear();
+			int ct = 0;
+			for (auto &b : backtrace->frames) {
+				QTreeWidgetItem *item = new QTreeWidgetItem(this);
 
-			item->setData(3, FILENAME_ROLE, b->source_location);
+				item->setData(3, FILENAME_ROLE, b->source_location);
 
-			item->setText(0, QString("#%1").arg(ct));
-			//item->setTextAlignment(0, Qt::AlignCenter);
-			ct++;
+				item->setText(0, QString("#%1").arg(ct));
+				//item->setTextAlignment(0, Qt::AlignCenter);
+				ct++;
 
-			mredit::Label *namelbl = new mredit::Label(this);
-			namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-			_configuration->createCPPHighligher(namelbl->document());
-			namelbl->setPlainText(_configuration->indentCPPType(b->name));
-			setItemWidget(item, 1, namelbl);
+				mredit::Label *namelbl = new mredit::Label(this);
+				namelbl->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+				_configuration->createCPPHighligher(namelbl->document());
+				namelbl->setPlainText(_configuration->indentCPPType(b->name));
+				setItemWidget(item, 1, namelbl);
 
-			item->setText(2, b->kind);
-			QFileInfo fi(b->source_location);
-			item->setText(3, fi.fileName());
+				item->setText(2, b->kind);
+				QFileInfo fi(b->source_location);
+				item->setText(3, fi.fileName());
 
-			item->setToolTip(1, QString("<pre>%1</pre>").arg(Util::indentCPPType(b->name).toHtmlEscaped()));
+				item->setToolTip(1, QString("<pre>%1</pre>").arg(Util::indentCPPType(b->name).toHtmlEscaped()));
 
-			scheduleDelayedItemsLayout();
+				scheduleDelayedItemsLayout();
+			}
+			setUpdatesEnabled(true);
+		}
+		catch (...) {
+			setUpdatesEnabled(true);
+			throw;
 		}
 	}
 	_backtrace = backtrace;
