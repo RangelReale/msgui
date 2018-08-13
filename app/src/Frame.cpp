@@ -44,7 +44,6 @@ Frame::Frame(msglib::cmd::base::ptr frame, itf::Configuration *configuration, QW
 
 	_name = new Frame_Editor(this);
 	connect(_name, &Frame_Editor::forceIndentChanged, this, &Frame::onForceIndentChanged);
-	QFont font();
 	_name->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 	_name->setReadOnly(true);
 	_name->setFrameStyle(QFrame::Plain);
