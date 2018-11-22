@@ -578,8 +578,7 @@ void MainWindow::loadFile(const QString &fileName)
 #ifndef QT_NO_CURSOR
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 #endif
-	if (_project)
-		delete _project;
+	delete _project;
 	_project = new Project(this);
 
 	QDomDocument doc;
